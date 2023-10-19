@@ -37,7 +37,6 @@ def fichierReader(nomFichier = "data/codeCanAda"):
                 if stack != []:
                     tokens.append("".join(stack))
                 stack = []
-            print(tokens)
             return tokens
     except FileNotFoundError:
         print("Le fichier n'existe pas")
