@@ -25,15 +25,29 @@ class Token:
     1-99: operateurs
     100-: keywords 
     """
-    def __init__(self, value:str) -> None:
+    def __init__(self, value:str, code:int=None) -> None:
         self.value = value
-        self.code = codes.get(value, 0)
+        if code:
+            self.code = code
+        else:
+            self.code = codes.get(value, 0)
     
     def __str__(self) -> str:
         return f"({self.code}, '{self.value}')"
     
     def __repr__(self) -> str:
         return "Token" + self.__str__()
+    
+    def __eq__(self, other) -> bool:
+        if isinstance(other, Token):
+            return self.code == other.code and self.value == other.value
+        if isinstance(other, int):
+            return self.code == other
+        if isinstance(other, str):
+            return self.value == other
+        return False
+    def __ne__(self, other) -> bool:
+        return not self.__eq__(other)
         
 
 def fileReader(nomFichier:str = "data/hw.ada") -> list[Token]:
@@ -49,13 +63,13 @@ def fileReader(nomFichier:str = "data/hw.ada") -> list[Token]:
         if not stack:
             return
         tokens.append(Token(stack))
-        print("\t\tAPPEND:", stack)
+        # print("\t\tAPPEND:", stack)
         stack = ""
     def zero(c:str)->None:
         nonlocal stack
         nonlocal stash
         nonlocal automate
-        print(f"0: '{c}'\t'{stack}'\t'{stash}'")
+        # print(f"0: '{c}'\t'{stack}'\t'{stash}'")
         if c in [op[0] for op in operators]:
             stash = stack
             tok_append()
@@ -70,7 +84,7 @@ def fileReader(nomFichier:str = "data/hw.ada") -> list[Token]:
         nonlocal stack
         nonlocal stash
         nonlocal automate
-        print(f"1: {c}\t{stack}\t{stash}")
+        # print(f"1: {c}\t{stack}\t{stash}")
         if stack + c in [op[:len(stack)+1] for op in operators if len(op)>len(stack)]:
             stack += c
             return
@@ -89,6 +103,7 @@ def fileReader(nomFichier:str = "data/hw.ada") -> list[Token]:
         for line in f:
             for c in line:
                 automate(c)
+        tok_append()
         return tokens
 
 if __name__=="__main__":
