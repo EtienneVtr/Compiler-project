@@ -4,7 +4,7 @@ from sample.fichierReader import fichierReader
 
 nomFichier = "data/codeCanAda"
 
-attentes = ["Trouver", "un", "code", "Ada", "Trouver", "un", "code", "Ada"]
+attentes = ['Trouver', 'un', 'code', 'Ada', 'int', 'x', ';', 'if', '(', 'x', '>', '10', ')', '', '', '', '', 'then', 'print', '(', 'x', ')', ';']
 
 class TestFichierReader(unittest.TestCase):
     def test_ma_fonction(self):
