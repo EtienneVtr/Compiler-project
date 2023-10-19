@@ -36,7 +36,7 @@ class Token:
         return "Token" + self.__str__()
         
 
-def fichierReader(nomFichier = "data/hw.ada") -> list[Token]:
+def fileReader(nomFichier:str = "data/hw.ada") -> list[Token]:
     """
     Renvoie une liste de chaque chaîne de caractères présent dans le fichier ayant comme séparateur l'espace et le retour à la ligne
     """
@@ -79,6 +79,7 @@ def fichierReader(nomFichier = "data/hw.ada") -> list[Token]:
             automate = zero
             zero(c)
             return
+        tokens.pop()
         stack = stash + stack
         automate = zero
         zero(c)
@@ -92,7 +93,7 @@ def fichierReader(nomFichier = "data/hw.ada") -> list[Token]:
 
 if __name__=="__main__":
     try:
-        tokens: list[Token] = fichierReader()
+        tokens: list[Token] = fileReader()
         print()
         for tok in tokens:
             print(tok)
