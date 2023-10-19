@@ -23,7 +23,7 @@ Aulagnie2u1/
 │ ├── test_module1.py # Tests pour module1
 │ ├── test_module2.py # Tests pour module2
 │
-├── docs/ # (Si nécessaire)
+├── docs/ # Données de cours ou utiles
 │
 ├── data/ # Données statiques ou fichiers de configuration
 │   ├── codeCanAda #Utile pour la réalision de test
