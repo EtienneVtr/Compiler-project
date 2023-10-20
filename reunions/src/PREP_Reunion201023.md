@@ -5,10 +5,10 @@
 
 
 ### Personnes Présentes
-- 
--
--
--
+- Maxence Bouchadel
+- Etienne Vatry
+- Matthias Cabillot
+- Mathis Aulagnier
 
 ### Objectifs de la Réunion
 - Présenter le dépôt Git du projet.
@@ -42,4 +42,3 @@ Ce serait formidable d'avoir la grammaire en 1H
 #### Attentes pour la Prochaine Réunion
 - Date et Heure
 - [Se mettre d'accord sur qui fait quoi, ou sur des session de travail intermédaire]
-
