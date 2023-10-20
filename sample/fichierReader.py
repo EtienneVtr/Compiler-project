@@ -49,7 +49,7 @@ class Token:
     >>> t != Token('or')
     True
     """
-    def __init__(self, value:str, code:int=None) -> None:
+    def __init__(self, value:str, line:int=None, code:int=None) -> None:
         """
         Initialise un Tokenœ
 
@@ -58,6 +58,7 @@ class Token:
             code (int, optional): le code du Token. Si code==None, utilise le code défini dans fichierReader.py.
         """
         self.value = value
+        self.line = line
         if code:
             self.code = code
         else:
