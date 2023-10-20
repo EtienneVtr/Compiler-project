@@ -13,7 +13,7 @@ operators = [
     '*', '/', '--', '.', ';',':=','(',')',','
 ]
 
-codes = dict()
+codes = dict()  # Dictionnaire des codes des mots-clés et opérateurs
 for i in range(len(operators)):
     codes[operators[i]] = i+1
 for i in range(len(keywords)):
@@ -21,11 +21,42 @@ for i in range(len(keywords)):
 
 class Token:
     """
+    Représente un Token par sa valeur et son code (cf. cours p.4-5)
     0: unite lexicale generic
     1-99: operateurs
-    100-: keywords 
+    100-: keywords
+
+    How to use:
+    >>> t = Token('and')
+    >>> t
+    Token(102, 'and')
+    >>> t == 102
+    True
+    >>> t == 'and'
+    True
+    >>> t == 'or'
+    False
+    >>> t == Token('or')
+    False
+    >>> print(t)
+    (102, 'and')
+    >>> t != 102
+    False
+    >>> t != 'and'
+    False
+    >>> t != 'or'
+    True
+    >>> t != Token('or')
+    True
     """
     def __init__(self, value:str, code:int=None) -> None:
+        """
+        Initialise un Tokenœ
+
+        Args:
+            value (str): la valeur du Token
+            code (int, optional): le code du Token. Si code==None, utilise le code défini dans fichierReader.py.
+        """
         self.value = value
         if code:
             self.code = code
@@ -52,14 +83,14 @@ class Token:
 
 def fileReader(nomFichier:str = "data/hw.ada") -> list[Token]:
     """
-    Renvoie une liste de chaque chaîne de caractères présent dans le fichier ayant comme séparateur l'espace et le retour à la ligne
+    Return une liste des Tokens luent dans un fichier
     """
     tokens = []
     stack = ""
     stash = ""
     automate = None
     def tok_append()->None:
-        nonlocal stack
+        nonlocal stack  # Tell the function to use the variable defined in the parent scope
         if not stack:
             return
         tokens.append(Token(stack))
