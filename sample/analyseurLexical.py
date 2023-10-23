@@ -65,7 +65,7 @@ class Token:
             self.code = codes.get(value, 0)
     
     def __str__(self) -> str:
-        return f"({self.code}, '{self.value}')"
+        return f"({self.code}, '{self.value}', ligne:{self.line})"
     
     def __repr__(self) -> str:
         return "Token" + self.__str__()
@@ -84,35 +84,35 @@ class Token:
 
 def analyseurLexical(nomFichier:str = "../data/hw.ada") -> list[Token]:
     """
-    Return une liste des Tokens luent dans un fichier
+    Return une liste des Tokens luent dans un fichiera
     """
     tokens = []
     stack = ""
     stash = ""
     automate = None
-    def tok_append()->None:
+    def tok_append(id_line:int=None)->None:
         nonlocal stack  # Tell the function to use the variable defined in the parent scope
         if not stack:
             return
-        tokens.append(Token(stack))
+        tokens.append(Token(stack, id_line))
         # print("\t\tAPPEND:", stack)
         stack = ""
-    def zero(c:str)->None:
+    def zero(c:str, id_line:int=None)->None:
         nonlocal stack
         nonlocal stash
         nonlocal automate
         # print(f"0: '{c}'\t'{stack}'\t'{stash}'")
         if c in [op[0] for op in operators]:
             stash = stack
-            tok_append()
+            tok_append(id_line)
             stack = c
             automate = one
             return
         if c in [' ', '\t', '\n']:
-            tok_append()
+            tok_append(id_line)
             return
         stack += c
-    def one(c:str)->None:
+    def one(c:str, id_line:int=None)->None:
         nonlocal stack
         nonlocal stash
         nonlocal automate
@@ -121,24 +121,27 @@ def analyseurLexical(nomFichier:str = "../data/hw.ada") -> list[Token]:
             stack += c
             return
         if stack in operators:
-            tok_append()
+            tok_append(id_line)
             automate = zero
-            zero(c)
+            zero(c,id_line)
             return
         tokens.pop()
         stack = stash + stack
         automate = zero
-        zero(c)
+        zero(c,id_line)
         automate = zero
     automate = zero
     with open(nomFichier, 'r') as f:
+        id_line = 1
         for line in f:
             if line.startswith('--'):
                 continue
             
             for c in line:
-                automate(c)
-        tok_append()
+                automate(c,id_line)
+                
+            id_line += 1
+        tok_append(id_line-1)
         return tokens
 
 if __name__=="__main__":
