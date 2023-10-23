@@ -1,6 +1,6 @@
 # Fonction test du fichier src.fichierReader
 import unittest
-from sample.fichierReader import fileReader, Token
+from sample.analyseurLexical import analyseurLexical, Token
 
 nomFichier = "data/hw.ada"
 
@@ -16,10 +16,10 @@ attentes = [
     Token("end", 106), Token("Hello", 0), Token(";", 13)
 ]
 
-class TestFichierReader(unittest.TestCase):
+class TestAnalyseurLexical(unittest.TestCase):
     def test_ma_fonction(self):
         # Écrire vos tests ici
-        result = fileReader(nomFichier)
+        result = analyseurLexical(nomFichier)
         print(result)
         self.assertEqual(result, attentes)
 

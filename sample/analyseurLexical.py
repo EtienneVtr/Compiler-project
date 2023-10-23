@@ -82,7 +82,7 @@ class Token:
         return not self.__eq__(other)
         
 
-def fileReader(nomFichier:str = "data/hw.ada") -> list[Token]:
+def analyseurLexical(nomFichier:str = "data/hw.ada") -> list[Token]:
     """
     Return une liste des Tokens luent dans un fichier
     """
@@ -140,7 +140,7 @@ def fileReader(nomFichier:str = "data/hw.ada") -> list[Token]:
 
 if __name__=="__main__":
     try:
-        tokens: list[Token] = fileReader()
+        tokens: list[Token] = analyseurLexical()
         print()
         for tok in tokens:
             print(tok)

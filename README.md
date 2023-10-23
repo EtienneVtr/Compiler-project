@@ -15,7 +15,7 @@ Aulagnie2u1/
 │
 ├── sample/ # Dossier contenant le code source
 │ ├── init.py # Fichier d'initialisation du module
-│ ├── fichierReader.py # fichierReader
+│ ├── analyseurLexical.py # analyseurLexical
 │ ├── module2.py # Module 2
 │
 ├── tests/ # Tests unitaires
@@ -60,9 +60,9 @@ class TestModule1Functions(unittest.TestCase):
 Pour exécuter les tests, assurez-vous d'être dans le répertoire racine de votre projet, puis utilisez la commande suivante :
 
 ```bash
-python3 -m unittest tests.test_fichierReader
+t
 ``````
-Cela exécutera le test du module fichierReader.
+Cela exécutera le test du module analyseurLexical.
 
 ```bash
 python -m unittest discover -s tests -p 'test_*.py'
