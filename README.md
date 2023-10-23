@@ -60,7 +60,7 @@ class TestModule1Functions(unittest.TestCase):
 Pour exécuter les tests, assurez-vous d'être dans le répertoire racine de votre projet, puis utilisez la commande suivante :
 
 ```bash
-t
+python3 -m unittest tests.test_analyseurLexical
 ``````
 Cela exécutera le test du module analyseurLexical.
 
