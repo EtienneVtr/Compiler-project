@@ -82,7 +82,7 @@ class Token:
         return not self.__eq__(other)
         
 
-def analyseurLexical(nomFichier:str = "data/hw.ada") -> list[Token]:
+def analyseurLexical(nomFichier:str = "../data/hw.ada") -> list[Token]:
     """
     Return une liste des Tokens luent dans un fichier
     """
@@ -133,6 +133,9 @@ def analyseurLexical(nomFichier:str = "data/hw.ada") -> list[Token]:
     automate = zero
     with open(nomFichier, 'r') as f:
         for line in f:
+            if line.startswith('--'):
+                continue
+            
             for c in line:
                 automate(c)
         tok_append()
