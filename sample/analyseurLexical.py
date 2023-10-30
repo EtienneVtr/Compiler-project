@@ -1,3 +1,16 @@
+import re
+
+# Définition de la taille max d'un identificateur
+MAX_IDENT_SIZE = 40
+
+# Définition de la taille max d'une constante
+MAX_CONST_SIZE = 10
+
+# Définition du code des identificateurs et constantes :
+STR_CODE = 202
+IDENT_CODE = 201
+CONST_CODE = 200
+
 # Liste des mots-clés
 keywords = [
     'access', 'and', 'begin', 'else', 'elsif', 'end',
@@ -62,10 +75,28 @@ class Token:
         if code:
             self.code = code
         else:
-            self.code = codes.get(value, 0)
+            if value.startswith('"') and value.endswith('"'):
+                self.code = STR_CODE
+            else:
+                self.code = codes.get(value, 0)
+                if self.code == 0:
+                    if self.value.isdigit() and len(self.value) <= MAX_CONST_SIZE:
+                        self.code = CONST_CODE
+                    elif re.match("^[a-zA-Z]([a-zA-Z0-9_])*$", self.value) and len(self.value) <= MAX_IDENT_SIZE:
+                        self.code = IDENT_CODE
+                    else :
+                        print("Erreur de caractère à la ligne", self.line, ":", self.value)
+
     
     def __str__(self) -> str:
-        return f"({self.code}, '{self.value}', ligne:{self.line})"
+        if self.code == CONST_CODE :
+            return f"('const', '{self.value}')"
+        elif self.code == IDENT_CODE :
+            return f"('ident', '{self.value}')"
+        elif self.code == STR_CODE :
+            return f"('str', '{self.value}')"
+        else :
+            return f"({self.code}, '{self.value}')"
     
     def __repr__(self) -> str:
         return "Token" + self.__str__()
@@ -111,6 +142,10 @@ def analyseurLexical(nomFichier:str = "../data/hw.ada") -> list[Token]:
         if c in [' ', '\t', '\n']:
             tok_append(id_line)
             return
+        if c == '"':
+            stack += c
+            automate = two
+            return
         stack += c
     def one(c:str, id_line:int=None)->None:
         nonlocal stack
@@ -130,6 +165,17 @@ def analyseurLexical(nomFichier:str = "../data/hw.ada") -> list[Token]:
         automate = zero
         zero(c,id_line)
         automate = zero
+    def two(c: str, id_line: int = None) -> None:
+        nonlocal stack
+        nonlocal stash
+        nonlocal automate
+        if c == '"':
+            stack += c
+            tok_append(id_line)
+            stack = ""
+            automate = zero
+        else:
+            stack += c
     automate = zero
     with open(nomFichier, 'r') as f:
         id_line = 1
