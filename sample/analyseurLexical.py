@@ -142,7 +142,7 @@ def analyseurLexical(nomFichier:str = "../data/hw.ada") -> list[Token]:
         if c in [' ', '\t', '\n']:
             tok_append(id_line)
             return
-        if c == '"':
+        if c == '"': # Si on reconnaît le début d'une chaîne de caractères, on va à l'état 2 de l'automate
             stack += c
             automate = two
             return
@@ -165,11 +165,11 @@ def analyseurLexical(nomFichier:str = "../data/hw.ada") -> list[Token]:
         automate = zero
         zero(c,id_line)
         automate = zero
-    def two(c: str, id_line: int = None) -> None:
+    def two(c: str, id_line:int=None)->None:
         nonlocal stack
         nonlocal stash
         nonlocal automate
-        if c == '"':
+        if c == '"': # Si on reconnaît la fin d'une chaîne de caractères, on ajoute tout ça à la suite des tokens
             stack += c
             tok_append(id_line)
             stack = ""
