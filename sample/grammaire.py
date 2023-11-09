@@ -172,7 +172,7 @@ class Parser:
 
 Tokens = [
     Token("with", 1, 129), Token("Ada", 1, 201), Token(".", 1, 12), Token("Text_IO", 1, 201), Token(";", 1, 13),
-    Token("procedure", 2, 119), Token("Hello", 2, 201), Token("is", 2, 112),
+    Token("procedure", 2, 119), Token("hello", 2, 201), Token("is", 2, 112),
     Token("begin", 4, 103),
     Token("x", 5, 201), Token(":=", 5, 14), Token("3", 5, 200),
     Token("if", 6, 110), Token("x", 6, 201), Token("=", 6, 1), Token("3", 6, 200),
