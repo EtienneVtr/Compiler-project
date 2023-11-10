@@ -23,7 +23,7 @@ keywords = [
 # Liste des opérateurs
 operators = [
     '=', '/=', '>', '>=', '<', '<=', '+', '-',
-    '*', '/', '--', '.', ';',':=','(',')',','
+    '*', '/', '--', '.', ';',':=','(',')',',',':'
 ]
 
 codes = dict()  # Dictionnaire des codes des mots-clés et opérateurs
@@ -113,7 +113,7 @@ class Token:
         return not self.__eq__(other)
         
 
-def analyseurLexical(nomFichier:str = "../data/hw.ada") -> list[Token]:
+def analyseurLexical(nomFichier:str = "../data/test1_correct.ada") -> list[Token]:
     """
     Return une liste des Tokens luent dans un fichiera
     """
