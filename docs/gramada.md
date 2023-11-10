@@ -93,7 +93,7 @@ EXPR -> ACCES
 EXPR -> E 
 EXPR -> new ident
 
-E -> EXPROPEXPR
+E -> EXPR OP EXPR
 E -> not EXPR
 E -> -EXPR
 E -> ident (EXPR+,)
