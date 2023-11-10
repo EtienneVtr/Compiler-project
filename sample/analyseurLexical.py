@@ -85,7 +85,7 @@ class Token:
                     elif re.match("^[a-zA-Z]([a-zA-Z0-9_])*$", self.value) and len(self.value) <= MAX_IDENT_SIZE:
                         self.code = IDENT_CODE
                     else :
-                        print("Erreur de caractère à la ligne", self.line, ":", self.value)
+                        print("Erreur lexicale à la ligne", self.line, ":", self.value)
 
     
     def __str__(self) -> str:
@@ -113,7 +113,7 @@ class Token:
         return not self.__eq__(other)
         
 
-def analyseurLexical(nomFichier:str = "../data/test1_correct.ada") -> list[Token]:
+def analyseurLexical(nomFichier:str = "../data/test2_erreur_lexical.ada") -> list[Token]:
     """
     Return une liste des Tokens luent dans un fichiera
     """
