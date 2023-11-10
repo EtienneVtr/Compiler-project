@@ -160,9 +160,9 @@ class Parser:
         self.consume("end loop")
 
     def analyseIdent(self):
-        print(f"Analyzing identifier {self.current_token}")
-        self.consume(self.current_token)
-
+        if self.current_token == 201 :#Code d'un idebtificateur
+            self.consume(self.current_token)
+            self.analyseID()
     def analyseID(self):
         if self.current_token in ["entier", "caractère", "_"]:
             self.consume(self.current_token)

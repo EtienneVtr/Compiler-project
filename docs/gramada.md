@@ -68,21 +68,21 @@ ________________________________________________________________________________
 
 
 
-FICHIER -> with Ada.Text_IO; use Ada.Text_IO; procedure IDENT is DECL* begin INSTRUCTION+ end IDENT? ; EOF
+FICHIER -> with Ada.Text_IO; use Ada.Text_IO; procedure ident is DECL* begin INSTRUCTION+ end ident? ; EOF
 
-DECL -> type IDENT D;
+DECL -> type ident D;
 DECL -> PROCEDURE
 DECL -> FUNCTION
 
 D -> is DPRIME
 D -> ''
 
-DPRIME -> access IDENT 
+DPRIME -> access ident 
 DPRIME -> record CHAMPS+ end record;
 
-PROCEDURE -> procedure IDENT PARAMS? is DECL* begin INSTRUCTION+ end IDENT?;
+PROCEDURE -> procedure ident PARAMS? is DECL* begin INSTRUCTION+ end ident?;
 
-FUNCTION -> function IDENT PARAMS? return TYPE is DECL* begin INSTRUCTION+ end IDENT?;
+FUNCTION -> function ident PARAMS? return TYPE is DECL* begin INSTRUCTION+ end ident?;
 
 EXPR -> <entier> 
 EXPR -> <caractère> 
@@ -91,17 +91,17 @@ EXPR -> false
 EXPR -> null 
 EXPR -> ACCES
 EXPR -> E 
-EXPR -> new IDENT
+EXPR -> new ident
 
 E -> EXPROPEXPR
 E -> not EXPR
 E -> -EXPR
-E -> IDENT (EXPR+,)
+E -> ident (EXPR+,)
 E -> character ' val (EXPR)
 
 INSTRUCTION -> ACCES := EXPR;
 INSTRUCTION -> return EXPR? ;
-INSTRUCTION -> IDENT I;
+INSTRUCTION -> ident I;
 INSTRUCTION -> BEGIN
 INSTRUCTION -> IF 
 INSTRUCTION -> FOR
@@ -118,18 +118,18 @@ IFTAIL -> elsif EXPR then INSTRUCTION+ IFTAIL
 IFTAIL -> (else INSTRUCTION+)? end if;
 
 
-FOR -> for IDENT in reverse? EXPR...EXPR loop INSTRUCTION+ end loop;
+FOR -> for ident in reverse? EXPR...EXPR loop INSTRUCTION+ end loop;
 
 WHILE -> while EXPR loop INSTRUCTION+ end loop;
 
-CHAMPS -> IDENT+, : TYPE;
+CHAMPS -> ident+, : TYPE;
 
-TYPE -> IDENT
-TYPE -> access IDENT
+TYPE -> ident
+TYPE -> access ident
 
 PARAMS -> (PARAM+;)
 
-PARAM -> IDENT+, : MODE? TYPE
+PARAM -> ident+, : MODE? TYPE
 
 MODE -> in
 MODE -> in out
@@ -150,13 +150,5 @@ OP -> and then
 OP -> or
 OP -> or else
 
-ACCES -> IDENT
-ACCES -> EXPR.IDENT
-
-IDENT -> <caractère>
-IDENT -> <caractère>ID
-
-ID -> <entier>ID
-ID -> <charactère>ID
-ID -> _ID
-ID -> ''
+ACCES -> ident
+ACCES -> EXPR.ident
