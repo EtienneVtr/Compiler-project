@@ -1,5 +1,6 @@
 program
-    : 'with' 'Ada.Text_IO;' 'use' 'Ada.Text_IO;' 'procedure' ident 'is' (decl)* 'begin' (instruction)+ 'end' (ident)? '; EOF';
+    : 'with' 'Ada' '.' 'Text_IO' ';' 'use' 'Ada' '.' 'Text_IO' ';' 'procedure' ident 'is' (decl)* 'begin' (instruction)+ 'end' (ident)? ';'
+    ;
 
 decl: 
     'type' ident d
@@ -117,11 +118,11 @@ op
 
 acces
     : ident
-    | expr '.' ident
+    | expr'.'ident
     ;
 
 ident
-    :  char (char | int)*
+    :  char(char|int)*
     ;
 
 char
