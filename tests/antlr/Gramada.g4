@@ -34,7 +34,9 @@ oP        :  '=' | '/=' | '<' | '<=' | '>' | '>=' | '+' | '-' | '*' | '/' | 'rem
 
 aCCES     :  IDENT | eXPR'.'IDENT;
 
-IDENT     :  [a-zA-Z] (ENTIER | CHAR | '_')*;
+// IDENT     :  [a-zA-Z] (ENTIER | CHAR | '_')*;
+
+IDENT: CHAR(ENTIER | CHAR | '_')*;
 
 ENTIER : [0-9]+;
-CHAR : .;
+CHAR : [a-zA-Z];
