@@ -118,7 +118,7 @@ def analyseurLexical(nomFichier:str = "../data/hw.ada") -> (list[Token],list[str
     stack = ""
     stash = ""
     automate = None
-    symbols = []
+    lexique = []
     def tok_append(id_line:int=None)->None:
         nonlocal stack  # Tell the function to use the variable defined in the parent scope
         if not stack:
@@ -128,14 +128,16 @@ def analyseurLexical(nomFichier:str = "../data/hw.ada") -> (list[Token],list[str
 # Token("ident", id_line, indice de l'ident dans la table des symboles)
 # On reconnaît un ident ssi il correspond au regex, qu'il n'est pas trop long et qu'il n'est ni dans les mots clés, ni dans les symboles déjà reconnus
 # ATTENTION : Les keywords sont entre 0 et 99, les opérateurs enrte 100 et 199, les symboles auront pour code 300 et plus !!!
-            if stack in symbols: # Si on a déjà vu l'ident, alors on ne fait que l'ajouter à la liste des tokens
-                tokens.append(Token("ident", id_line, symbols.index(stack)+300))
-            else :
-                symbols.append(stack) # Si on ne l'a pas encore vu, il faut aussi l'ajouter à la liste de symboles
-                tokens.append(Token("ident", id_line, symbols.index(stack)+300))
-        else :
-            tokens.append(Token(stack, id_line))
-        # print("\t\tAPPEND:", stack)
+            for i in range(len(lexique)):
+                if lexique[i]==stack:   # Si on trouve dans lexique on ajoute le code dans tokens
+                    tokens.append(Token("ident", id_line, lexique.index(stack)+300))
+                    stack = ""
+                    return  # Sort de la fonction
+            lexique.append(stack)   # Sinon on ajoute stack dans le lexique
+            tokens.append(Token("ident", id_line, len(lexique)+299)) # len(lexique) + 300 - 1 car # car stack est le dernier elt de lexique
+            stack = ""
+            return  # Sort de la fonction
+        tokens.append(Token(stack, id_line))    # Si pas IDENT
         stack = ""
     def zero(c:str, id_line:int=None)->None:
         nonlocal stack
@@ -199,16 +201,16 @@ def analyseurLexical(nomFichier:str = "../data/hw.ada") -> (list[Token],list[str
                 
             id_line += 1
         tok_append(id_line-1)
-        return (tokens,symbols)
+        return (tokens,lexique)
 
 if __name__=="__main__":
     try:
-        (tokens,symbols) = analyseurLexical()
+        (tokens,lexique) = analyseurLexical()
         print()
         for tok in tokens:
             print(tok)
         print()
-        for symbol in symbols:
-            print(symbols.index(symbol), symbol)
+        for i in range(len(lexique)):
+            print(i, lexique[i])
     except Exception as e:
         print(e)
