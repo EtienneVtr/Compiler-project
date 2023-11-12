@@ -8,7 +8,6 @@ MAX_CONST_SIZE = 10
 
 # Définition du code des identificateurs et constantes :
 STR_CODE = 202
-IDENT_CODE = 201
 CONST_CODE = 200
 
 # Liste des mots-clés
@@ -72,7 +71,7 @@ class Token:
         """
         self.value = value
         self.line = line
-        if code:
+        if code is not None:
             self.code = code
         else:
             if value.startswith('"') and value.endswith('"'):
@@ -82,8 +81,6 @@ class Token:
                 if self.code == 0:
                     if self.value.isdigit() and len(self.value) <= MAX_CONST_SIZE:
                         self.code = CONST_CODE
-                    elif re.match("^[a-zA-Z]([a-zA-Z0-9_])*$", self.value) and len(self.value) <= MAX_IDENT_SIZE:
-                        self.code = IDENT_CODE
                     else :
                         print("Erreur lexicale à la ligne", self.line, ":", self.value)
 
@@ -91,10 +88,10 @@ class Token:
     def __str__(self) -> str:
         if self.code == CONST_CODE :
             return f"('const', '{self.value}')"
-        elif self.code == IDENT_CODE :
-            return f"('ident', '{self.value}')"
         elif self.code == STR_CODE :
             return f"('str', '{self.value}')"
+        elif self.code >= 300:
+            return f"('{self.value}', {self.code-300})"
         else :
             return f"({self.code}, '{self.value}')"
     
@@ -113,7 +110,7 @@ class Token:
         return not self.__eq__(other)
         
 
-def analyseurLexical(nomFichier:str = "../data/test2_erreur_lexical.ada") -> list[Token]:
+def analyseurLexical(nomFichier:str = "../data/hw.ada") -> (list[Token],list[str]):
     """
     Return une liste des Tokens luent dans un fichiera
     """
@@ -121,11 +118,23 @@ def analyseurLexical(nomFichier:str = "../data/test2_erreur_lexical.ada") -> lis
     stack = ""
     stash = ""
     automate = None
+    symbols = []
     def tok_append(id_line:int=None)->None:
         nonlocal stack  # Tell the function to use the variable defined in the parent scope
         if not stack:
             return
-        tokens.append(Token(stack, id_line))
+        if re.match("^[a-zA-Z]([a-zA-Z0-9_])*$", stack) and len(stack) <= MAX_IDENT_SIZE and stack not in keywords:
+# Si stack contient un ident, on rentre ce dernier dans la table des symboles et on crée le token de la façon suivante : 
+# Token("ident", id_line, indice de l'ident dans la table des symboles)
+# On reconnaît un ident ssi il correspond au regex, qu'il n'est pas trop long et qu'il n'est ni dans les mots clés, ni dans les symboles déjà reconnus
+# ATTENTION : Les keywords sont entre 0 et 99, les opérateurs enrte 100 et 199, les symboles auront pour code 300 et plus !!!
+            if stack in symbols: # Si on a déjà vu l'ident, alors on ne fait que l'ajouter à la liste des tokens
+                tokens.append(Token("ident", id_line, symbols.index(stack)+300))
+            else :
+                symbols.append(stack) # Si on ne l'a pas encore vu, il faut aussi l'ajouter à la liste de symboles
+                tokens.append(Token("ident", id_line, symbols.index(stack)+300))
+        else :
+            tokens.append(Token(stack, id_line))
         # print("\t\tAPPEND:", stack)
         stack = ""
     def zero(c:str, id_line:int=None)->None:
@@ -180,21 +189,26 @@ def analyseurLexical(nomFichier:str = "../data/test2_erreur_lexical.ada") -> lis
     with open(nomFichier, 'r') as f:
         id_line = 1
         for line in f:
-            if line.startswith('--'):
+            if '--' in line:
+                line = line.split('--', 1)[0] # S'il y a un commentaire dans la ligne, on ignore toute la ligne à partir de --
+            if not line.strip(): # Si, après suppression du commentaire, la ligne est vide, alors on passe à la ligne suivante
                 continue
-            
+
             for c in line:
                 automate(c,id_line)
                 
             id_line += 1
         tok_append(id_line-1)
-        return tokens
+        return (tokens,symbols)
 
 if __name__=="__main__":
     try:
-        tokens: list[Token] = analyseurLexical()
+        (tokens,symbols) = analyseurLexical()
         print()
         for tok in tokens:
             print(tok)
+        print()
+        for symbol in symbols:
+            print(symbols.index(symbol), symbol)
     except Exception as e:
         print(e)
