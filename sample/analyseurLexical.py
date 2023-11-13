@@ -130,7 +130,7 @@ def analyseurLexical(nomFichier:str = "../data/hw.ada") -> (list[Token],list[str
 # ATTENTION : Les keywords sont entre 0 et 99, les opérateurs enrte 100 et 199, les symboles auront pour code 300 et plus !!!
             for i in range(len(lexique)):
                 if lexique[i]==stack:   # Si on trouve dans lexique on ajoute le code dans tokens
-                    tokens.append(Token("ident", id_line, lexique.index(stack)+300))
+                    tokens.append(Token("ident", id_line, i+300))
                     stack = ""
                     return  # Sort de la fonction
             lexique.append(stack)   # Sinon on ajoute stack dans le lexique
@@ -205,7 +205,9 @@ def analyseurLexical(nomFichier:str = "../data/hw.ada") -> (list[Token],list[str
 
 if __name__=="__main__":
     try:
-        (tokens,lexique) = analyseurLexical()
+        tokens: list[Token]
+        lexique: list[str]
+        tokens, lexique = analyseurLexical()
         print()
         for tok in tokens:
             print(tok)
