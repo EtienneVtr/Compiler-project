@@ -136,7 +136,7 @@ def analyseurLexical(nomFichier:str = "../data/hw.ada") -> (list[Token],list[str
             lexique.append(stack)   # Sinon on ajoute stack dans le lexique
             tokens.append(Token("ident", id_line, len(lexique)+299)) # len(lexique) + 300 - 1 car # car stack est le dernier elt de lexique
             stack = ""
-            return  # Sort de la fonction
+            return  # Sort de la fonction   
         tokens.append(Token(stack, id_line))    # Si pas IDENT
         stack = ""
     def zero(c:str, id_line:int=None)->None:
@@ -204,10 +204,14 @@ def analyseurLexical(nomFichier:str = "../data/hw.ada") -> (list[Token],list[str
         return (tokens,lexique)
 
 if __name__=="__main__":
+    from sys import argv
     try:
         tokens: list[Token]
         lexique: list[str]
-        tokens, lexique = analyseurLexical()
+        if len(argv)>1:
+            tokens, lexique = analyseurLexical(argv[1])
+        else:
+            tokens, lexique = analyseurLexical()
         print()
         for tok in tokens:
             print(tok)
