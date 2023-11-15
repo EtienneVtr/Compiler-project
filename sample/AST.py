@@ -1,4 +1,4 @@
-from token import Token
+from token_pcl import Token
 
 class Node:
     def __init__(self, type:str):
@@ -9,7 +9,7 @@ class Node:
         return self
     def nbr_children(self) -> int:
         return len(self.children)
-    def rm_children(self) -> 'Node':
+    def rm_child(self) -> 'Node':
         return self.children.pop()
     def to_str(self) -> str:
         rtn = f"{self.type}: {', '.join([child.type for child in self.children])}"
@@ -26,8 +26,12 @@ class Node:
 class AST:
     def __init__(self):
         self.root = Node("FICHIER")
+        self.cur = self.root
     def __str__(self):
         return self.root.__str__()
+    def append(self, type:str) -> Node:
+        self.cur.add_child(Node(type))
+        return self.cur
 
 
 

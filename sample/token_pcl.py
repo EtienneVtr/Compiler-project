@@ -68,7 +68,8 @@ class Token:
             code (int, optional): le code du Token. Si code==None, utilise le code défini dans fichierReader.py.
         """
         self.value = value
-        self.line = line
+        if line:
+            self.line = line+1
         if code is not None:
             self.code = code
         else:
@@ -103,6 +104,18 @@ class Token:
             return self.code == other
         if isinstance(other, str):
             return self.value == other
+        return False
+    def __gt__(self, other) -> bool:
+        if isinstance(other, Token):
+            return self.code > other.code
+        if isinstance(other, int):
+            return self.code > other
+        return False
+    def __lt__(self, other) -> bool:
+        if isinstance(other, Token):
+            return self.code < other.code
+        if isinstance(other, int):
+            return self.code < other
         return False
     def __ne__(self, other) -> bool:
         return not self.__eq__(other)
