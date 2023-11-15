@@ -1,4 +1,0 @@
-Trouver un code Ada
-int x;
-if (x>10)
-    then print(x);
