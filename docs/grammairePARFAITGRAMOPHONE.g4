@@ -1,6 +1,6 @@
 FICHIER -> with ada point textio pointvirgule use ada point textio pointvirgule procedure IDENT is DECLETOILE begin INSTRPLUS end IDENTINTER pointvirgule .
 
-DECL -> type IDENT ISDINTEROGATION pointvirgule
+DECL -> type IDENT DINTEROGATION pointvirgule
     | PROCEDURE 
     | FUNC .
 
