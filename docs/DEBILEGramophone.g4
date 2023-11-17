@@ -28,12 +28,21 @@ VIRGULEEXPRETOILE ->	virgule EXPR VIRGULEEXPRETOILE
 |	.
 INSTR ->	IDENT HELP2
 |	return EXPRINTER pointvirgule
-|	BEGIN
+|	BEGIN 
 |	IF
 |	FOR
-|	WHILE .
+|	WHILE 
+|	int OPTERMETOILE point IDENT deuxpointsegal EXPR pointvirgule
+|	caractere VALEXPR OPTERMETOILE point IDENT deuxpointsegal EXPR pointvirgule
+|	true OPTERMETOILE point IDENT deuxpointsegal EXPR pointvirgule
+|	false OPTERMETOILE point IDENT deuxpointsegal EXPR pointvirgule
+|	null OPTERMETOILE point IDENT deuxpointsegal EXPR pointvirgule
+|	not EXPR OPTERMETOILE point IDENT deuxpointsegal EXPR pointvirgule
+|	moins EXPR OPTERMETOILE point IDENT deuxpointsegal EXPR pointvirgule
+|	new IDENT OPTERMETOILE point IDENT deuxpointsegal EXPR pointvirgule .
+
 HELP2 ->	deuxpointsegal EXPR pointvirgule
-|	( EXPR HELP .
+|	( EXPR HELP3 .
 HELP3 ->	) HELP
 |	virgule EXPR VIRGULEEXPRETOILE ) OPTERMETOILE IDENT deuxpointsegal EXPR pointvirgule .
 HELP ->	EXPRPARENTHETOILE pointvirgule
@@ -91,8 +100,6 @@ THEN ->	then
 |	.
 ELSE ->	else
 |	.
-ACCES ->	IDENT
-|	EXPR point IDENT .
 IDENT ->	ident .
 IDENTINTER ->	IDENT
 |	.
