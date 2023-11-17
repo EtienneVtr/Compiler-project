@@ -121,22 +121,12 @@ OP -> and THEN
     | plus 
     | moins .
 
-
-
-
 THEN -> then
 | .
 
 ELSE -> else
 | .
 
-and THEN
-or ELSE
-equal, different, inferior, inferioregal, superior, superioregal
-plus, moins
-mult, division, rem
-then
-else
 
 ACCES ->  IDENT 
     | EXPR point IDENT .
