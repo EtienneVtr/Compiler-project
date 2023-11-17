@@ -32,14 +32,17 @@ INSTR ->	IDENT HELP2
 |	IF
 |	FOR
 |	WHILE 
-|	int OPTERMETOILE point IDENT deuxpointsegal EXPR pointvirgule
-|	caractere VALEXPR OPTERMETOILE point IDENT deuxpointsegal EXPR pointvirgule
-|	true OPTERMETOILE point IDENT deuxpointsegal EXPR pointvirgule
-|	false OPTERMETOILE point IDENT deuxpointsegal EXPR pointvirgule
-|	null OPTERMETOILE point IDENT deuxpointsegal EXPR pointvirgule
-|	not EXPR OPTERMETOILE point IDENT deuxpointsegal EXPR pointvirgule
-|	moins EXPR OPTERMETOILE point IDENT deuxpointsegal EXPR pointvirgule
-|	new IDENT OPTERMETOILE point IDENT deuxpointsegal EXPR pointvirgule .
+|	int FIN
+|	caractere VALEXPR FIN
+|	true FIN
+|	false FIN
+|	null FIN
+|	not EXPR FIN
+|	moins EXPR FIN
+|	new IDENT FIN .
+
+FIN -> OPTERMETOILE point IDENT deuxpointsegal EXPR pointvirgule .
+
 
 HELP2 ->	deuxpointsegal EXPR pointvirgule
 |	( EXPR HELP3 .

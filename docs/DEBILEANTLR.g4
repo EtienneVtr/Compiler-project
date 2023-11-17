@@ -1,6 +1,6 @@
 grammar Gramada;
 
-fICHIER :	'with Ada.Text_IO ; use Ada.Text_IO ;\nprocedure' IDENT 'is' dECL*'\nbegin' iNSTR+ 'end' iDENTINTER ';';
+fICHIER :	'with Ada.Text_IO ; use Ada.Text_IO ;\nprocedure' IDENT 'is' dECL*'\nbegin' iNSTR+ 'end' iDENT? ';';
 
 dECL :	'type' IDENT ('is' d)? ';' | pROCEDURE | fUNC;
 
@@ -12,11 +12,13 @@ fUNC :	'function' IDENT pARAMS? 'return' tYPE 'is' dECL*'\nbegin' iNSTR+ 'end' I
 
 eXPR :	tERM (oP tERM)*;
 
-tERM :	ENTIER | CHAR vALEXPR |	'true' | 'false' | 'null' | 'not' eXPR | '-' eXPR | IDENT '(' eXPR vIRGULEEXPRETOILE ')' | 'new' IDENT ;
+tERM :	ENTIER | CHAR vALEXPR |	'true' | 'false' | 'null' | 'not' eXPR | '-' eXPR | IDENT '(' eXPR (','eXPR)* ')' | 'new' IDENT ;
 
 vALEXPR :	'val' eXPR | '';
 
-iNSTR : IDENT hELP2 |	'return' eXPR? ';' |	bEGIN |	iF |	fOR |	wHILE;
+iNSTR : IDENT hELP2 |	'return' eXPR? ';' |	bEGIN |	iF |	fOR |	wHILE |	ENTIER fIN |	CHAR VALEXPR fIN |	'true' fIN |	'false' fIN |	'null' fIN |	'not' EXPR fIN |	'moins' EXPR fIN |	'new' IDENT fIN;
+
+fIN -> (oP tERM)* '.' IDENT ':=' EXPR ';';
 
 hELP2 :	':=' eXPR ';' |	'(' eXPR hELP;
 
