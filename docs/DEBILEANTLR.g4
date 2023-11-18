@@ -48,10 +48,6 @@ mODE :	'in' 'out'?;
 
 oP :	'and' 'then'? |	'or' 'else'? |	'=' |	'/=' |	'<' |	'<=' |	'>' |	'>=' |	'*' |	'/' |	'rem' |	'+' |	'-';
 
-aCCES :	IDENT |	eXPR'.'IDENT;
-
-iDENTINTER :	IDENT |	'';
-
 IDENT: CHAR(ENTIER | CHAR | '_')*;
 ENTIER : [0-9]+;
 CHAR : [a-zA-Z];

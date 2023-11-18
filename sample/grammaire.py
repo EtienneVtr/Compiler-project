@@ -1,7 +1,7 @@
 # pour IDENT
 
 from token_pcl import Token
-from ast import AST
+from ast import AST, Node
 from utils import *
 from analyseurLexical import *
 
@@ -168,8 +168,8 @@ def TERM(tokens:list[Token], node:Node) -> None:
     if tok.code == 200:
         node.add_child("Entier: " + consume(tokens, 200, Token.__lt__).value)
     elif tok.code == 202:
-        CHAR(tokens, node.add_child(Node("CHAR")))
-        if tok == 'val' # Temporaire en attendant ce que l'on fait avec val
+        node.add_child("Char: " + consume(tokens, 202, Token.__lt__).value)
+        if tok == 'val': # Temporaire en attendant ce que l'on fait avec val
             consume(tokens, 300, Token.__lt__)
             EXPR(tokens, node.add_child(Node("EXPR")))
     elif tok.code == 125:
@@ -202,7 +202,7 @@ def TERM(tokens:list[Token], node:Node) -> None:
 def INSTR(tokens:list[Token], node:Node) -> None:
     tok = tokens[0]
     if tok.code == 300:
-        IDENT(tokens, node.add_child(Node("IDENT")))
+        Node.add_child("Ident: " + consume(tokens, 300, Token.__lt__).value)
         HELP2(tokens, node.add_child(Node("HELP2")))
     elif tok.code == 122:
         consume(tokens, 122)
@@ -239,8 +239,10 @@ def INSTR(tokens:list[Token], node:Node) -> None:
         node.add_child("Ident: " + consume(tokens, 300, Token.__lt__).value)
         FIN(tokens, node.add_child(Node("FIN")))
     elif tok.code == 202:
-        CHAR(tokens, node.add_child(Node("CHAR")))
-        VALEXPR(tokens, node.add_child(Node("VALEXPR")))
+        Node.add_child("Char: " + consume(tokens, 202, Token.__lt__).value)
+        if tok == 'val': # Temporaire en attendant ce que l'on fait avec val
+            consume(tokens, 300, Token.__lt__)
+            EXPR(tokens, node.add_child(Node("EXPR")))
         FIN(tokens, node.add_child(Node("FIN")))
     else:
         print_err(1, tok, "ident, return, begin, if, for, while, entier, char, true, false, null, not, -, new")
@@ -271,7 +273,7 @@ def HELP2(tokens:list[Token], node:Node) -> None:
         EXPR(tokens, node.add_child(Node("EXPR")))
         HELP3(tokens, node.add_child(Node("HELP")))
     else:
-        print_err(1, tok, ":= or (")
+        print_err(1, tok, ":= (")
 
 # hELP3 :	')' hELP |	',' eXPR (','eXPR)* ')' (oP tERM)* IDENT ':=' eXPR ';';
 def HELP3(tokens:list[Token], node:Node) -> None:
@@ -298,10 +300,196 @@ def HELP3(tokens:list[Token], node:Node) -> None:
         EXPR(tokens, node.add_child(Node("EXPR")))
         consume(tokens, 13)
     else:
-        print_err(1, tok, ") or ,") # or n'est pas expected c'est ou LOL
+        print_err(1, tok, ") ,")
 
 # hELP :	('(' eXPR ')')* ';' |	IDENT ':=' eXPR ';' |	(oP tERM)+ IDENT ':=' eXPR ';';
-# A faire BITCH
+def HELP(tokens:list[Token], node:Node) -> None:
+    tok = tokens[0]
+    if tok.code == 15:
+        while tok.code == 15:
+            consume(tokens, 15)
+            EXPR(tokens, node.add_child(Node("EXPR")))
+            consume(tokens, 16)
+            tok = tokens[0]
+        consume(tokens, 13)
+    elif tok.code == 300:
+        node.add_child("Ident: " + consume(tokens, 300, Token.__lt__).value)
+        consume(tokens, 14)
+        EXPR(tokens, node.add_child(Node("EXPR")))
+        consume(tokens, 13)
+    elif tok.code in [1,2,3,4,5,6,7,8,9,10,102,117,121]:
+        OP(tokens, node.add_child(Node("OP")))
+        TERM(tokens, node.add_child(Node("TERM")))
+        tok = tokens[0]
+        while tok.code in [1,2,3,4,5,6,7,8,9,10,102,117,121]:
+            OP(tokens, node.add_child(Node("OP")))
+            TERM(tokens, node.add_child(Node("TERM")))
+            tok = tokens[0]
+        node.add_child("Ident: " + consume(tokens, 300, Token.__lt__).value)
+        consume(tokens, 14)
+        EXPR(tokens, node.add_child(Node("EXPR")))
+        consume(tokens, 13)
+    else:
+        print_err(1, tok, "(, ident op")
+
+# bEGIN :	'begin' iNSTR+ 'end';
+def BEGIN(tokens:list[Token], node:Node) -> None:
+    consume(tokens, 103)
+    INSTR(tokens, node.add_child(Node("INSTR")))
+    tok = tokens[0]
+    while tok.code != 106:
+        INSTR(tokens, node.add_child(Node("INSTR")))
+        tok = tokens[0]
+    consume(tokens, 106)
+
+# iF :	'if' eXPR 'then' iNSTR+ iF_TAIL;
+def IF(tokens:list[Token], node:Node) -> None:
+    consume(tokens, 110)
+    EXPR(tokens, node.add_child(Node("EXPR")))
+    consume(tokens, 124)
+    INSTR(tokens, node.add_child(Node("INSTR")))
+    tok = tokens[0]
+    while tok.code != 106:
+        INSTR(tokens, node.add_child(Node("INSTR")))
+        tok = tokens[0]
+    IF_TAIL(tokens, node.add_child(Node("IF_TAIL")))
+
+# iF_TAIL :	'elsif' eXPR 'then' iNSTR+ iF_TAIL |	('else' iNSTR+)? 'end' 'if';
+def IF_TAIL(tokens:list[Token], node:Node) -> None:
+    tok = tokens[0]
+    if tok.code == 105:
+        consume(tokens, 105)
+        EXPR(tokens, node.add_child(Node("EXPR")))
+        consume(tokens, 124)
+        INSTR(tokens, node.add_child(Node("INSTR")))
+        tok = tokens[0]
+        while tok.code != 106:
+            INSTR(tokens, node.add_child(Node("INSTR")))
+            tok = tokens[0]
+        IF_TAIL(tokens, node.add_child(Node("IF_TAIL")))
+    elif tok.code == 104:
+        consume(tokens, 104)
+        INSTR(tokens, node.add_child(Node("INSTR")))
+        tok = tokens[0]
+        while tok.code != 106:
+            INSTR(tokens, node.add_child(Node("INSTR")))
+            tok = tokens[0]
+        consume(tokens, 106)
+        consume(tokens, 110)
+    elif tok.code == 106:
+        consume(tokens, 106)
+        consume(tokens, 110)
+    else:
+        print_err(1, tok, "elsif, else, end")
+    
+# fOR :	'for' IDENT 'in' 'reverse'? eXPR '...' eXPR'\nloop' iNSTR+ 'end' 'loop' ';';
+def FOR(tokens:list[Token], node:Node) -> None:
+    consume(tokens, 108)
+    node.add_child("Ident: " + consume(tokens, 300, Token.__lt__).value)
+    consume(tokens, 111)
+    tok = tokens[0]
+    if tok.code == 123:
+        consume(tokens, 123)
+    EXPR(tokens, node.add_child(Node("EXPR")))
+    # Methode temporaire en attendant l'insertion des '..' officiels ou des '...' officieux dans les caractères spéciaux
+    if tokens[0] == 12 and tokens[1] == 12 : # and tokens[2] == 12:
+        consume(tokens, 12)
+        consume(tokens, 12)
+        #consume(tokens, 12)
+    EXPR(tokens, node.add_child(Node("EXPR")))
+    consume(tokens, 113)
+    INSTR(tokens, node.add_child(Node("INSTR")))
+    tok = tokens[0]
+    while tok.code != 106:
+        INSTR(tokens, node.add_child(Node("INSTR")))
+        tok = tokens[0]
+    consume(tokens, 106)
+    consume(tokens, 113)
+    consume(tokens, 13)
+    
+# wHILE :	'while' eXPR 'loop' iNSTR+ 'end loop';
+def WHILE(tokens:list[Token], node:Node) -> None:
+    consume(tokens, 128)
+    EXPR(tokens, node.add_child(Node("EXPR")))
+    consume(tokens, 113)
+    INSTR(tokens, node.add_child(Node("INSTR")))
+    tok = tokens[0]
+    while tok.code != 106:
+        INSTR(tokens, node.add_child(Node("INSTR")))
+        tok = tokens[0]
+    consume(tokens, 106)
+    consume(tokens, 113)
+
+# cHAMPS :	IDENT (','IDENT)* ':' tYPE ';';
+def CHAMPS(tokens:list[Token], node:Node) -> None:
+    node.add_child("Ident: " + consume(tokens, 300, Token.__lt__).value)
+    tok = tokens[0]
+    while tok.code == 17:
+        consume(tokens, 17)
+        node.add_child("Ident: " + consume(tokens, 300, Token.__lt__).value)
+        tok = tokens[0]
+    consume(tokens, 18)
+    TYPE(tokens, node.add_child(Node("TYPE")))
+    consume(tokens, 13)
+
+# tYPE :	IDENT |	'access' IDENT ;
+def TYPE(tokens:list[Token], node:Node) -> None:
+    tok = tokens[0]
+    if tok.code == 101:
+        consume(tokens, 101)
+        node.add_child("Ident: " + consume(tokens, 300, Token.__lt__).value)
+    elif tok == 300:
+        node.add_child("Ident: " + consume(tokens, 300, Token.__lt__).value)
+    else:
+        print_err(1, tok, "IDENT or access")
+
+# pARAMS :	'('pARAM (','pARAM)*')';
+def PARAMS(tokens:list[Token], node:Node) -> None:
+    consume(tokens, 15)
+    PARAM(tokens, node.add_child(Node("PARAM")))
+    tok = tokens[0]
+    while tok.code == 17:
+        consume(tokens, 17)
+        PARAM(tokens, node.add_child(Node("PARAM")))
+        tok = tokens[0]
+    consume(tokens, 16)
+
+# pARAM :	IDENT (','IDENT)* ':' mODE? tYPE;
+def PARAM(tokens:list[Token], node:Node) -> None:
+    node.add_child("Ident: " + consume(tokens, 300, Token.__lt__).value)
+    tok = tokens[0]
+    while tok.code == 17:
+        consume(tokens, 17)
+        node.add_child("Ident: " + consume(tokens, 300, Token.__lt__).value)
+        tok = tokens[0]
+    consume(tokens, 18)
+    tok = tokens[0]
+    if tok.code == 111:
+        MODE(tokens, node.add_child(Node("MODE")))
+    TYPE(tokens, node.add_child(Node("TYPE")))
+
+# mODE :	'in' 'out'?;
+def MODE(tokens:list[Token], node:Node) -> None:
+    consume(tokens, 111)
+    tok = tokens[0]
+    if tok.code == 118:
+        consume(tokens, 118)
 
 # oP :	'and' 'then'? |	'or' 'else'? |	'=' |	'/=' |	'<' |	'<=' |	'>' |	'>=' |	'*' |	'/' |	'rem' |	'+' |	'-';
+def OP(tokens:list[Token], node:Node) -> None:
+    tok = tokens[0]
+    if tok.code == 102:
+        consume(tokens, 102)
+        tok = tokens[0]
+        if tok.code == 124:
+            consume(tokens, 124)
+    elif tok.code == 117:
+        consume(tokens, 117)
+        tok = tokens[0]
+        if tok.code == 104:
+            consume(tokens, 104)
+    elif tok.code in [1,2,3,4,5,6,7,8,9,10,121]:
+        tokens.pop(0)
+    else:
+        print_err(1, tok, "and, or, =, /=, <, <=, >, >=, *, /, rem, +, -")
 # L_Suivant_OP = [1,2,3,4,5,6,7,8,9,10,102,117,121]
