@@ -1,6 +1,6 @@
 from ast import AST
-from token import Token
-from grammairev2 import *
+from token_pcl import Token
+from grammaire import *
 
 def analyseSyntaxique(tokens:list[Token]) -> AST:
     root = Node("FICHIER")

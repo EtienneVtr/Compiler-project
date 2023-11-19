@@ -1,5 +1,5 @@
 import re
-from token import Token, MAX_IDENT_SIZE, MAX_CONST_SIZE, CONST_CODE, STR_CODE, codes, keywords, operators
+from token_pcl import Token, MAX_IDENT_SIZE, MAX_CONST_SIZE, CONST_CODE, STR_CODE, codes, keywords, operators
 
 def analyseurLexical(nomFichier:str = "../data/hw.ada") -> (list[Token],list[str]):
     """

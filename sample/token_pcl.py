@@ -29,6 +29,14 @@ for i in range(len(operators)):
 for i in range(len(keywords)):
     codes[keywords[i]] = i+101
 
+keys = list(codes.keys())
+values = list(codes.values())
+
+def get_keyword(code:[int, tuple]) -> str:
+    if isinstance(code, tuple):
+        return tuple([get_keyword(c) for c in code])
+    return keys[values.index(code)] if code<300 else 'ident'
+
 class Token:
     """
     Représente un Token par sa valeur et son code (cf. cours p.4-5)
