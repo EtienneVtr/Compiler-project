@@ -26,7 +26,7 @@ wHILE     :  'while' eXPR 'loop' iNSTR+ 'end loop';
 
 cHAMPS    :  IDENT (','IDENT)* ':' tYPE';';
 tYPE      :  IDENT | 'access' IDENT;
-pARAMS    :  '('pARAM (','pARAM)*')';
+pARAMS    :  '('pARAM (';'pARAM)*')';
 pARAM     :  IDENT (','IDENT)* ':' mODE? tYPE;
 mODE      :  'in' | 'in out';
 

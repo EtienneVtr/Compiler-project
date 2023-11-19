@@ -2,7 +2,7 @@ grammar Gramada;
 
 fICHIER :	'with Ada.Text_IO ; use Ada.Text_IO ;\nprocedure' IDENT 'is' dECL*'\nbegin' iNSTR+ 'end' iDENT? ';';
 
-dECL :	'type' IDENT ('is' d)? ';' | pROCEDURE | fUNC;
+dECL :	'type' IDENT ('is' d)? ';' | pROCEDURE | fUNC | IDENT (',' IDENT)* (':=' EXPR)? ';';
 
 d : 'access' IDENT | 'record' cHAMPS+ 'end record ;';
 
@@ -40,7 +40,7 @@ cHAMPS :	IDENT (','IDENT)* ':' tYPE ';';
 
 tYPE :	IDENT |	'access' IDENT ;
 
-pARAMS :	'('pARAM (','pARAM)*')';
+pARAMS :	'('pARAM (';'pARAM)*')';
 
 pARAM :	IDENT (','IDENT)* ':' mODE? tYPE;
 

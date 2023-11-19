@@ -58,12 +58,13 @@ def FICHIER(tokens: list[Token], node:Node) -> None:
     consume(tokens, 119)
     node.add_child("Ident: " + consume(tokens, 300, Token.__lt__).value)
     consume(tokens, 112)
-
+    # tok = consume(tokens, (103,126, 119, 109), lambda t, c: not t in c) # check whether tok is in (126, 119, 109)
+    # Evite sinon rajoute un param tok.code dans DECL
     tok = tokens[0] # On regarde le prochain token
     while tok.code != 103: # Tant qu'on a pas un 'begin'
         DECL(tokens, node.add_child(Node("DECL")))  # On rentre dans la règle DECL
         tok = tokens[0]
-    tokens.pop(0)
+    tokens.pop(0) # On consomme le 'begin'
     INSTR(tokens, node.add_child(Node("INSTR"))) # On rentre dans la règle INSTR+
     tok = tokens[0] # On regarde le prochain token
     while tok.code != 106:
@@ -74,13 +75,12 @@ def FICHIER(tokens: list[Token], node:Node) -> None:
     consume(tokens, 300, Token.__lt__)
     consume(tokens, 13)
 
-# dECL :	'type' IDENT ('is' d)? ';' | pROCEDURE | fUNC;
+# dECL :	'type' IDENT ('is' d)? ';' | pROCEDURE | fUNC | IDENT (',' IDENT)* (':=' EXPR)? ';';
 def DECL(tokens:list[Token], node:Node) -> None:
     print("Entering DECL")
-
-    tok = consume(tokens, (126, 119, 109), lambda t, c: not t in c) # check whether tok is in (126, 119, 109)
+    tok = consume(tokens, (126, 119, 109, 300), lambda t, c: not t in c) # check whether tok is in (126, 119, 109)
     if tok==126:
-        consume(tokens, 300, Token.__lt__)
+        consume(tokens, 300, Token.__lt__) #Ajouter un noeud ?
         tok = tokens.pop()
         if tok==112: # tok == 'is'
             D(tokens, node.add_child(Node("D")))
@@ -88,9 +88,19 @@ def DECL(tokens:list[Token], node:Node) -> None:
         return
     if tok==119:
         PROCEDURE(tokens, node.add_child(Node("PROCEDURE")))
-        return
-    # Error has been handled in consume
-    FUNC(tokens, node.add_child(Node("FUNC")))
+    if tok==109:
+        FUNC(tokens, node.add_child(Node("FUNC")))
+    if tok==300:
+        tok = consume((17, 14, 13), lambda t, c:not t in c) # check whether tok is in (17, 14, 13)
+        while tok.code == 17:
+            Node.add_child("Ident: " + consume(tokens, 300, Token.__lt__).value)
+            tok = consume((17, 14, 13), lambda t, c:not t in c)
+        if tok.code == 14:
+            EXPR(tokens, node.add_child(Node("EXPR")))
+            tok = consume((13, 14), lambda t, c:not t in c)
+        
+
+            
     
 
 # d : 'access' IDENT | 'record' cHAMPS+ 'end record ;';
@@ -111,7 +121,6 @@ def D(tokens:list[Token], node:Node) -> None:
 # pROCEDURE :	'procedure' IDENT pARAMS? 'is' dECL*'\nbegin' iNSTR+ 'end' IDENT? ';';
 def PROCEDURE(tokens:list[Token], node:Node) -> None:
     print("Entering PROCEDURE")
-    consume(tokens, 119)
     node.add_child("Ident: " + consume(tokens, 300, Token.__lt__).value)
     tok = tokens[0]
     if tok.code == 108:
@@ -135,10 +144,11 @@ def PROCEDURE(tokens:list[Token], node:Node) -> None:
 # fUNC :	'function' IDENT pARAMS? 'return' tYPE 'is' dECL*'\nbegin' iNSTR+ 'end' IDENT?';';
 def FUNC(tokens:list[Token], node:Node) -> None:
     print("Entering FUNC")
-    consume(tokens, 109)
     node.add_child("Ident: " + consume(tokens, 300, Token.__lt__).value)
     tok = tokens[0]
-    if tok.code == 108:
+    # N'utilise par tok = consume(tokens, (101, 120), lambda t, c: not t in c) # check whether tok is in (101, 120)
+    # car si on a params, il faut consume 'return' une fois params terminé, sauf que ce n'est pas toujours le suivant
+    if tok.code == 15:
         PARAMS(tokens, node.add_child(Node("PARAMS")))
     consume(tokens, 122)
     TYPE(tokens, node.add_child(Node("TYPE")))
@@ -442,37 +452,33 @@ def CHAMPS(tokens:list[Token], node:Node) -> None:
 # tYPE :	IDENT |	'access' IDENT ;
 def TYPE(tokens:list[Token], node:Node) -> None:
     print("Entering TYPE")
-    tok = tokens[0]
-    if tok.code == 101:
-        consume(tokens, 101)
+    tok = consume(tokens, (300, 101), lambda t, c: t in c,) # check whether tok is in (300, 101)
+    if tok==101:
         node.add_child("Ident: " + consume(tokens, 300, Token.__lt__).value)
-    elif tok == 300:
-        node.add_child("Ident: " + consume(tokens, 300, Token.__lt__).value)
-    else:
-        print_err(1, tok, "IDENT or access")
+    print('Fin Type')
 
-# pARAMS :	'('pARAM (','pARAM)*')';
+# pARAMS :	'('pARAM (';'pARAM)*')';
 def PARAMS(tokens:list[Token], node:Node) -> None:
     print("Entering PARAMS")
     consume(tokens, 15)
     PARAM(tokens, node.add_child(Node("PARAM")))
-    tok = tokens[0]
-    while tok.code == 17:
-        consume(tokens, 17)
+    tok = consume(tokens, (16, 13), lambda t, c: not t in c) # check whether tok is in (16, 17))
+    while tok.code == 13:
         PARAM(tokens, node.add_child(Node("PARAM")))
-        tok = tokens[0]
-    consume(tokens, 16)
+        print('retour PARAMS')
+        tok = consume(tokens, (16, 17), lambda t, c: not t in c)
+  
 
 # pARAM :	IDENT (','IDENT)* ':' mODE? tYPE;
 def PARAM(tokens:list[Token], node:Node) -> None:
     print("Entering PARAM")
     node.add_child("Ident: " + consume(tokens, 300, Token.__lt__).value)
-    tok = tokens[0]
+    tok = consume(tokens, (17, 18), lambda t, c: not t in c) # check whether tok is in (17, 18)
     while tok.code == 17:
         consume(tokens, 17)
         node.add_child("Ident: " + consume(tokens, 300, Token.__lt__).value)
-        tok = tokens[0]
-    consume(tokens, 18)
+        tok = consume(tokens, (17, 18), lambda t, c: not t in c)
+    # JE SAIS I KNOW deux check mais plus simple à comprendre
     tok = tokens[0]
     if tok.code == 111:
         MODE(tokens, node.add_child(Node("MODE")))
@@ -500,11 +506,8 @@ def OP(tokens:list[Token], node:Node) -> None:
         tok = tokens[0]
         if tok.code == 104:
             consume(tokens, 104)
-    elif tok.code in [1,2,3,4,5,6,7,8,9,10,121]:
-        tokens.pop(0)
-    else:
-        print_err(1, tok, "and, or, =, /=, <, <=, >, >=, *, /, rem, +, -")
-# L_Suivant_OP = [1,2,3,4,5,6,7,8,9,10,102,117,121]
+    tok = consume(tokens, (1,2,3,4,5,6,7,8,9,10,121), lambda t, c: not t in c)
+   # L_Suivant_OP = [1,2,3,4,5,6,7,8,9,10,102,117,121]
 
 if __name__=="__main__":
     from analyseurLexical import analyseurLexical

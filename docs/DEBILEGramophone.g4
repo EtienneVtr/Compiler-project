@@ -1,5 +1,6 @@
 FICHIER ->	with ada point textio pointvirgule use ada point textio pointvirgule procedure IDENT is DECLETOILE begin INSTRPLUS end IDENTINTER pointvirgule .
 DECL ->	type IDENT DINTEROGATION pointvirgule
+|   IDENT VIRGULEIDENTETOILE deuxpoint TYPE DPOINTEGALEXPRINTER pointvirgule
 |	PROCEDURE
 |	FUNC .
 DECLETOILE ->	DECL DECLETOILE
@@ -8,6 +9,13 @@ D ->	access IDENT
 |	record CHAMPS CHAMPSPLUS end record pointvirgule .
 DINTEROGATION ->	is D
 |	.
+
+VIRGULEIDENTETOILE -> virgule IDENT
+|   .
+
+DPOINTEGALEXPRINTER -> deuxpointsegal EXPR
+|   .
+
 PROCEDURE ->	procedure IDENT PARAMSINTER is DECLETOILE begin INSTR INSTRPLUS end IDENTINTER pointvirgule .
 FUNC ->	function IDENT PARAMSINTER return TYPE is DECLETOILE begin INSTR INSTRPLUS end IDENTINTER pointvirgule .
 EXPR ->	TERM OPTERMETOILE .
@@ -76,7 +84,7 @@ CHAMPSPLUS ->	CHAMPS CHAMPSPLUS
 TYPE ->	IDENT
 |	access IDENT .
 PARAMS ->	( PARAM PARAMVIRGULEETOILE ) .
-PARAMVIRGULEETOILE ->	virgule PARAM PARAMVIRGULEETOILE
+PARAMVIRGULEETOILE ->	pointvirgule PARAM PARAMVIRGULEETOILE
 |	.
 PARAMSINTER ->	PARAMS
 |	.
