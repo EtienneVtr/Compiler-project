@@ -19,6 +19,8 @@ from utils import *
 #     125'true', 126'type', 127'use', 128'while', 129'with'
 # ]
 
+
+
 # # Liste des opérateurs
 # operators = [
 #     1'=', 2'/=', 3'>', 4'>=', 5'<', 6'<=', 7'+', 8'-',
@@ -33,10 +35,13 @@ from utils import *
 
 VERBOSE = True
 
+COUNT = 0
+
 def consume(tokens:list[Token], code:int, func:callable=Token.__ne__) -> Token:
+    global COUNT
     tok  = tokens.pop(0)
     if VERBOSE:
-        print("Consumming", tok, sep=' ')
+        print((COUNT:=COUNT+1),"Consumming", tok, sep=' ')
     if func(tok, code):
         print_err(1, tok, get_keyword(code))
         exit(1)
@@ -75,33 +80,32 @@ def FICHIER(tokens: list[Token], node:Node) -> None:
     consume(tokens, 300, Token.__lt__)
     consume(tokens, 13)
 
-# dECL :	'type' IDENT ('is' d)? ';' | pROCEDURE | fUNC | IDENT (',' IDENT)* (':=' EXPR)? ';';
+# dECL :	'type' IDENT ('is' d)? ';' | pROCEDURE | fUNC | IDENT (',' IDENT)* : TYPE  (':=' EXPR)? ';';
 def DECL(tokens:list[Token], node:Node) -> None:
     print("Entering DECL")
-    tok = consume(tokens, (126, 119, 109, 300), lambda t, c: not t in c) # check whether tok is in (126, 119, 109)
-    if tok==126:
-        consume(tokens, 300, Token.__lt__) #Ajouter un noeud ?
-        tok = tokens.pop()
-        if tok==112: # tok == 'is'
+    tok = consume(tokens, (126, 119, 109), lambda t, c: not t in c and 300>t) # check whether tok is in (126, 119, 109, 'ident')
+    if tok==126: # ==type
+        node.add_child(Node("Ident: " + consume(tokens, 300, Token.__lt__).value))
+        tok = consume(tokens, (112, 13), lambda t, c: not t in c)
+        if tok==112:
             D(tokens, node.add_child(Node("D")))
-        consume(tokens, 13)
-        return
+            consume(tokens, 13)
+            return
     if tok==119:
         PROCEDURE(tokens, node.add_child(Node("PROCEDURE")))
     if tok==109:
         FUNC(tokens, node.add_child(Node("FUNC")))
-    if tok==300:
-        tok = consume((17, 14, 13), lambda t, c:not t in c) # check whether tok is in (17, 14, 13)
-        while tok.code == 17:
-            Node.add_child("Ident: " + consume(tokens, 300, Token.__lt__).value)
-            tok = consume((17, 14, 13), lambda t, c:not t in c)
-        if tok.code == 14:
-            EXPR(tokens, node.add_child(Node("EXPR")))
-            tok = consume((13, 14), lambda t, c:not t in c)
-        
+    # Error has been handled before
+    tok = consume(tokens, (17, 14, 13, 18), lambda t, c:not t in c) # check whether tok is in (17, 14, 13)
+    while tok.code == 17:
+        Node.add_child("Ident: " + consume(tokens, 300, Token.__lt__).value)
+        tok = consume(tokens, (17, 18), lambda t, c:not t in c)
+    TYPE(tokens, node.add_child(Node("TYPE")))
+    tok = consume(tokens, (14, 13), lambda t, c:not t in c) # check whether tok is in (14, 13)
+    if tok==14:
+        EXPR(tokens, node.add_child(Node("EXPR")))
+        consume(tokens, 13)
 
-            
-    
 
 # d : 'access' IDENT | 'record' cHAMPS+ 'end record ;';
 def D(tokens:list[Token], node:Node) -> None:
@@ -168,53 +172,41 @@ def FUNC(tokens:list[Token], node:Node) -> None:
         node.add_child("Ident: " + consume(tokens, 300, Token.__lt__).value)
     consume(tokens, 13)
 
-# eXPR :	tERM (oP tERM)*;
+# eXPR :	tERM (oP tERM)* ('.' IDENT)?;
 def EXPR(tokens:list[Token], node:Node) -> None:
     print("Entering EXPR")
     TERM(tokens, node.add_child(Node("TERM")))
     tok = tokens[0]
-    while tok.code in [1,2,3,4,5,6,7,8,9,10,102,117,121]:
+    while not tok in (12, 13):
         OP(tokens, node.add_child(Node("OP")))
         TERM(tokens, node.add_child(Node("TERM")))
         tok = tokens[0]
+    if tok == 12:
+        consume(tokens, 12)
+        node.add_child("Ident: " + consume(tokens, 300, Token.__lt__).value)
+    # tok == 13
+    consume(tokens, 13)
 
-# tERM :	ENTIER | CHAR vALEXPR |	'true' | 'false' | 'null' | 'not' eXPR | '-' eXPR | IDENT '(' eXPR vIRGULEEXPRETOILE ')' | 'new' IDENT ;
+# tERM :	ENTIER | CHAR vALEXPR |	'true' | 'false' | 'null' | 'not' eXPR | '-' eXPR | IDENT ('(' eXPR vIRGULEEXPRETOILE ')')? | 'new' IDENT ;
 def TERM(tokens:list[Token], node:Node) -> None:
     print("Entering TERM")
-    tok = tokens[0]
-    if tok.code == 200:
-        node.add_child("Entier: " + consume(tokens, 200, Token.__lt__).value)
-    elif tok.code == 202:
-        node.add_child("Char: " + consume(tokens, 202, Token.__lt__).value)
-        if tok == 'val': # Temporaire en attendant ce que l'on fait avec val
-            consume(tokens, 300, Token.__lt__)
-            EXPR(tokens, node.add_child(Node("EXPR")))
-    elif tok.code == 125:
-        consume(tokens, 125)
-    elif tok.code == 107:
-        consume(tokens, 107)
-    elif tok.code == 116:
-        consume(tokens, 116)
-    elif tok.code == 115:
-        consume(tokens, 115)
-        EXPR(tokens, node.add_child(Node("EXPR")))
-    elif tok.code == 8:
-        consume(tokens, 8)
-        EXPR(tokens, node.add_child(Node("EXPR")))
-    elif tok.code == 300:
-        node.add_child("Ident: " + consume(tokens, 300, Token.__lt__).value)
-        consume(tokens, 15)
-        EXPR(tokens, node.add_child(Node("EXPR")))
-        while tok.code == 17:
-            consume(tokens, 17)
-            EXPR(tokens, node.add_child(Node("EXPR")))
-        consume(tokens, 16)
-    elif tok.code == 114:
-        consume(tokens, 114)
-        node.add_child("Ident: " + consume(tokens, 300, Token.__lt__).value)
-    else:
-        print_err(1, tok, "entier, char, true, false, null, not, -, ident, new")
 
+    # Manage non terminaux
+
+    # Manage terminaux
+    tok = consume(tokens, (125, 126, 116, 115, 8, 114), lambda t, c: not t in c) # check whether tok is in (
+    if tok in (125, 126, 116):
+        node.add_child("Const: " + tok.value)
+        return
+    if tok in (115, 8):
+        EXPR(tokens, node.add_child(Node("EXPR")))
+        return
+    if tok == 114:
+        node.add_child("Ident: " + tok.value)
+        return
+    
+
+    
 # iNSTR : IDENT hELP2 |	'return' eXPR? ';' |	bEGIN |	iF |	fOR |	wHILE |	ENTIER fIN |	CHAR VALEXPR fIN |	'true' fIN |	'false' fIN |	'null' fIN |	'not' EXPR fIN |	'-' EXPR fIN |	'new' IDENT fIN;
 def INSTR(tokens:list[Token], node:Node) -> None:
     print("Entering INSTR")
