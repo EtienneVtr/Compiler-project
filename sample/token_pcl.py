@@ -14,7 +14,7 @@ keywords = [
     'false', 'for', 'function', 'if', 'in', 'is',
     'loop', 'new', 'not', 'null', 'or', 'out',
     'procedure', 'record', 'rem', 'return', 'reverse', 'then',
-    'true', 'type', 'use', 'while', 'with'
+    'true', 'type', 'use', 'while', 'with', 'val',
 ]
 
 # Liste des opérateurs

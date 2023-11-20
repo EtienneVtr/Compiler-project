@@ -187,24 +187,41 @@ def EXPR(tokens:list[Token], node:Node) -> None:
     # tok == 13
     consume(tokens, 13)
 
-# tERM :	ENTIER | CHAR vALEXPR |	'true' | 'false' | 'null' | 'not' eXPR | '-' eXPR | IDENT ('(' eXPR vIRGULEEXPRETOILE ')')? | 'new' IDENT ;
+# tERM :	ENTIER | CHAR val EXPR |	'true' | 'false' | 'null' | 'not' eXPR | '-' eXPR | IDENT ('(' eXPR vIRGULEEXPRETOILE ')')? | 'new' IDENT ;
 def TERM(tokens:list[Token], node:Node) -> None:
     print("Entering TERM")
-
     # Manage non terminaux
-
+    match tokens[0]:
+        case 200: # ENTIER
+            node.add_child("Entier: " + consume(tokens, 200, Token.__lt__).value)
+            return
+        case 202: # CHAR
+            node.add_child("Char: " + consume(tokens, 202, Token.__lt__).value)
+            consume(tokens, 130)
+            EXPR(tokens, node.add_child(Node("EXPR")))
+            return
     # Manage terminaux
-    tok = consume(tokens, (125, 126, 116, 115, 8, 114), lambda t, c: not t in c) # check whether tok is in (
-    if tok in (125, 126, 116):
-        node.add_child("Const: " + tok.value)
+    if tokens[0] in (125, 126, 116):
+        node.add_child("Const: " + consume(tokens, (125, 126, 116), lambda t, c: not t in c).value)
         return
-    if tok in (115, 8):
+    if tokens[0] in (115, 8):
         EXPR(tokens, node.add_child(Node("EXPR")))
         return
-    if tok == 114:
-        node.add_child("Ident: " + tok.value)
+    if tokens[0] == 114:
+        node.add_child("Ident: " + consume(tokens, 114).value)
         return
+    # IDENT ('(' eXPR vIRGULEEXPRETOILE ')')?
+    node.add_child("Ident: " + consume(tokens, 300, Token.__lt__).value)
+    if tokens[0] == 15: # '('
+        consume(tokens, 15) # consume anyway for consistency
+        EXPR(tokens, node.add_child(Node("EXPR")))
+        while consume(tokens, (17, 16), lambda t, c: not t in c) == 17:
+            EXPR(tokens, node.add_child(Node("EXPR")))
     
+    
+
+def VALEXPR(tokens:list[Token], node:Node) -> None:
+    pass
 
     
 # iNSTR : IDENT hELP2 |	'return' eXPR? ';' |	bEGIN |	iF |	fOR |	wHILE |	ENTIER fIN |	CHAR VALEXPR fIN |	'true' fIN |	'false' fIN |	'null' fIN |	'not' EXPR fIN |	'-' EXPR fIN |	'new' IDENT fIN;
@@ -265,11 +282,11 @@ def FIN(tokens:list[Token], node:Node) -> None:
 def HELP2(tokens:list[Token], node:Node) -> None:
     print("Entering HELP2")
     tok = tokens[0]
-    if tok.code == 14:
+    if tok == 14:
         consume(tokens, 14)
         EXPR(tokens, node.add_child(Node("EXPR")))
         consume(tokens, 13)
-    elif tok.code == 15:
+    elif tok == 15:
         consume(tokens, 15)
         EXPR(tokens, node.add_child(Node("EXPR")))
         HELP3(tokens, node.add_child(Node("HELP")))
@@ -508,6 +525,7 @@ if __name__=="__main__":
     lexique: list[str]
     tokens, lexique = analyseurLexical(argv[1] if len(argv)>=2 else "../data/test1_correct.ada")
     print(tokens, end="\n\n")
+    print(lexique, end="\n\n")
     root = Node("FICHIER")
     FICHIER(tokens, root)
     print(root)
