@@ -14,7 +14,7 @@ keywords = [
     'false', 'for', 'function', 'if', 'in', 'is',
     'loop', 'new', 'not', 'null', 'or', 'out',
     'procedure', 'record', 'rem', 'return', 'reverse', 'then',
-    'true', 'type', 'use', 'while', 'with'
+    'true', 'type', 'use', 'while', 'with', 'val',
 ]
 
 # Liste des opérateurs
@@ -28,6 +28,14 @@ for i in range(len(operators)):
     codes[operators[i]] = i+1
 for i in range(len(keywords)):
     codes[keywords[i]] = i+101
+
+keys = list(codes.keys())
+values = list(codes.values())
+
+def get_keyword(code:[int, tuple]) -> str:
+    if isinstance(code, tuple):
+        return tuple([get_keyword(c) for c in code])
+    return keys[values.index(code)] if code<300 else 'ident'
 
 class Token:
     """

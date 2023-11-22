@@ -1,4 +1,4 @@
-with Ada.Text_IO;
+with Ada.Text_IO; use Ada.Text_IO;
 procedure Hello is
 -- test
 begin
