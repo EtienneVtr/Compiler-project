@@ -12,6 +12,11 @@ while True:
             print(get_keyword(code))
         else:
             print(codes.get(code, "Not found"))
+    except ValueError:
+        print("Not a code nor a keyword")
+    except EOFError:
+        print()
+        exit(0)
     except KeyboardInterrupt:
         print()
         exit(0)
