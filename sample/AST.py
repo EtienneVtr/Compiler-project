@@ -1,9 +1,12 @@
 from token_pcl import Token
 
 class Node:
+    NEXT_ID = 0
     def __init__(self, type:str):
         self.children:list['Node'] = []
         self.type:str = type
+        self.id = Node.NEXT_ID
+        Node.NEXT_ID += 1
     def add_child(self, child:'Node') -> 'Node':
         if not isinstance(child, Node):
             child = Node(child)
@@ -25,6 +28,15 @@ class Node:
         if self.nbr_children() == 0:
             return self.type
         return f"{self.type}({', '.join([child.__repr__() for child in self.children])})"
+    def mermaid(self) -> str:
+        rtn = "graph TD;\n"
+        return rtn + self._mermaid()
+    def _mermaid(self) -> str:
+        rtn = ""
+        for child in self.children:
+            rtn += f"\t{self.type}:{self.id} --> {child.type}:{child.id};\n"
+            rtn += child._mermaid()
+        return rtn
 class AST:
     def __init__(self):
         self.root = Node("FICHIER")
