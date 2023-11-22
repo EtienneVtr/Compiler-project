@@ -35,6 +35,8 @@ values = list(codes.values())
 def get_keyword(code:[int, tuple]) -> str:
     if isinstance(code, tuple):
         return tuple([get_keyword(c) for c in code])
+    if code in (CONST_CODE, STR_CODE):
+        return 'const'
     return keys[values.index(code)] if code<300 else 'ident'
 
 class Token:

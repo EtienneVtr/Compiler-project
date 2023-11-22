@@ -85,6 +85,7 @@ def analyseurLexical(nomFichier:str = "../data/hw.ada") -> (list[Token],list[str
             if '--' in line:
                 line = line.split('--', 1)[0] # S'il y a un commentaire dans la ligne, on ignore toute la ligne à partir de --
             if not line.strip(): # Si, après suppression du commentaire, la ligne est vide, alors on passe à la ligne suivante
+                id_line += 1
                 continue
 
             for c in line:

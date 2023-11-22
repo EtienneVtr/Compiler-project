@@ -5,8 +5,10 @@ class Node:
         self.children:list['Node'] = []
         self.type:str = type
     def add_child(self, child:'Node') -> 'Node':
+        if not isinstance(child, Node):
+            child = Node(child)
         self.children.append(child)
-        return self
+        return self.children[-1]
     def nbr_children(self) -> int:
         return len(self.children)
     def rm_child(self) -> 'Node':
