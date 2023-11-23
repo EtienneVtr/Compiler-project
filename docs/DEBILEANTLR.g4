@@ -18,9 +18,9 @@ vALEXPR :	'val' eXPR | '';
 
 iNSTR : IDENT hELP2 |	'return' eXPR? ';' |	bEGIN |	iF |	fOR |	wHILE |	ENTIER fIN |	CHAR VALEXPR fIN |	'true' fIN |	'false' fIN |	'null' fIN |	'not' EXPR fIN |	'moins' EXPR fIN |	'new' IDENT fIN;
 
-fIN -> (oP tERM)* '.' IDENT ':=' EXPR ';';
+fIN : (oP tERM)* '.' IDENT ':=' eXPR ';';
 
-hELP2 :	':=' eXPR ';' |	'(' eXPR hELP;
+hELP2 :	':=' eXPR ';' |	'(' eXPR hELP3;
 
 hELP3 :	')' hELP |	',' eXPR (','eXPR)* ')' (oP tERM)* IDENT ':=' eXPR ';';
 
