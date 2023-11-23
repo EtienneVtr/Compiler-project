@@ -1,7 +1,7 @@
 import re
 from token_pcl import Token, MAX_IDENT_SIZE, MAX_CONST_SIZE, CONST_CODE, STR_CODE, codes, keywords, operators
 
-def analyseurLexical(nomFichier:str = "../data/hw.ada") -> (list[Token],list[str]):
+def analyseurLexical(nomFichier:str = "../data/test1_correct.ada") -> (list[Token],list[str]):
     """
     Return une liste des Tokens luent dans un fichiera
     """

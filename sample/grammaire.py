@@ -96,6 +96,18 @@ def DECL(tokens:list[Token], node:Node) -> None:
     if tok==109:
         FUNC(tokens, node.add_child(Node("FUNC")))
         return
+    if tok.code >= 300:
+        node.add_child(Node("Ident" + tok.value))
+        while tokens[0] != 18: # not ':'
+            consume(tokens, 17)
+            node.add_child(Node("Ident" + consume(tokens, 300, Token.__lt__).value))
+        consume(tokens, 18)
+        TYPE(tokens, node.add_child(Node("TYPE")))
+        if tokens[0] == 14: # ':='
+            consume(tokens, 14)
+            EXPR(tokens, node.add_child(Node("EXPR")))
+        consume(tokens, 13)
+        return
     # Error has been handled before
     tok = consume(tokens, (17, 14, 13, 18), lambda t, c:not t in c) # check whether tok is in (17, 14, 13)
     while tok.code == 17:
