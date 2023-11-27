@@ -67,7 +67,7 @@ def FICHIER(tokens: list[Token], node:Node) -> None:
     consume(tokens, 300, Token.__lt__)
     consume(tokens, 13)
     consume(tokens, 119)
-    node.add_child(Node("Ident" + consume(tokens, 300, Token.__lt__).value))
+    node.add_child(Node("Ident-" + consume(tokens, 300, Token.__lt__).value))
     consume(tokens, 112)
     while tokens[0]!=103: # not 'begin'
         DECL(tokens, node.add_child(Node("DECL")))
@@ -84,7 +84,7 @@ def DECL(tokens:list[Token], node:Node) -> None:
     # print("Entering DECL")
     tok = consume(tokens, (126, 119, 109), lambda t, c: not t in c and 300>t) # check whether tok is in (126, 119, 109, 'ident')
     if tok==126: # ==type
-        node.add_child(Node("Ident" + consume(tokens, 300, Token.__lt__).value))
+        node.add_child(Node("Ident-" + consume(tokens, 300, Token.__lt__).value))
         tok = consume(tokens, (112, 13), lambda t, c: not t in c)
         if tok==112:
             D(tokens, node.add_child(Node("D")))
@@ -97,12 +97,12 @@ def DECL(tokens:list[Token], node:Node) -> None:
         FUNC(tokens, node.add_child(Node("FUNC")))
         return
     if tok.code >= 300:
-        node.add_child(Node("Ident" + tok.value))
+        node.add_child(Node("Ident-" + tok.value))
         while tokens[0] != 18: # not ':'
             consume(tokens, 17)
-            node.add_child(Node("Ident" + consume(tokens, 300, Token.__lt__).value))
+            node.add_child(Node("Ident-" + consume(tokens, 300, Token.__lt__).value))
         consume(tokens, 18)
-        TYPE(tokens, node.add_child(Node("TYPE")))
+        TYPE(tokens, node)
         if tokens[0] == 14: # ':='
             consume(tokens, 14)
             EXPR(tokens, node.add_child(Node("EXPR")))
@@ -111,9 +111,9 @@ def DECL(tokens:list[Token], node:Node) -> None:
     # Error has been handled before
     tok = consume(tokens, (17, 14, 13, 18), lambda t, c:not t in c) # check whether tok is in (17, 14, 13)
     while tok.code == 17:
-        Node.add_child(Node("Ident" + consume(tokens, 300, Token.__lt__).value))
+        Node.add_child(Node("Ident-" + consume(tokens, 300, Token.__lt__).value))
         tok = consume(tokens, (17, 18), lambda t, c:not t in c)
-    TYPE(tokens, node.add_child(Node("TYPE")))
+    TYPE(tokens, node)
     tok = consume(tokens, (14, 13), lambda t, c:not t in c) # check whether tok is in (14, 13)
     if tok==14:
         EXPR(tokens, node.add_child(Node("EXPR")))
@@ -126,7 +126,7 @@ def D(tokens:list[Token], node:Node) -> None:
     # print("Entering D")
     tok = consume(tokens, (101, 120), lambda t, c: not t in c) # check whether tok is in (101, 120)
     if tok==101:
-        node.add_child(Node("Ident" + consume(tokens, 300, Token.__lt__).value))
+        node.add_child(Node("Ident-" + consume(tokens, 300, Token.__lt__).value))
         return
     # Error has been handled in consume => tok=='record'
     CHAMPS(tokens, node.add_child(Node("CHAMPS")))
@@ -139,7 +139,7 @@ def D(tokens:list[Token], node:Node) -> None:
 # pROCEDURE :	'procedure' IDENT pARAMS? 'is' dECL*'\nbegin' iNSTR+ 'end' IDENT? ';';
 def PROCEDURE(tokens:list[Token], node:Node) -> None:
     # print("Entering PROCEDURE")
-    node.add_child(Node("Ident" + consume(tokens, 300, Token.__lt__).value))
+    node.add_child(Node("Ident-" + consume(tokens, 300, Token.__lt__).value))
     tok = tokens[0]
     if tok.code == 108:
         PARAMS(tokens, node.add_child(Node("PARAMS")))
@@ -156,21 +156,21 @@ def PROCEDURE(tokens:list[Token], node:Node) -> None:
         tok = tokens[0]
     consume(tokens, 106)
     if tok.code == 300:
-        node.add_child(Node("Ident" + consume(tokens, 300, Token.__lt__).value))
+        node.add_child(Node("Ident-" + consume(tokens, 300, Token.__lt__).value))
     consume(tokens, 13)
     # print("Leaving PROCEDURE")
 
 # fUNC :	'function' IDENT pARAMS? 'return' tYPE 'is' dECL*'\nbegin' iNSTR+ 'end' IDENT?';';
 def FUNC(tokens:list[Token], node:Node) -> None:
     # print("Entering FUNC")
-    node.add_child("Ident" + consume(tokens, 300, Token.__lt__).value)
+    node.add_child("Ident-" + consume(tokens, 300, Token.__lt__).value)
     tok = tokens[0]
     # N'utilise par tok = consume(tokens, (101, 120), lambda t, c: not t in c) # check whether tok is in (101, 120)
     # car si on a params, il faut consume 'return' une fois params terminé, sauf que ce n'est pas toujours le suivant
     if tok.code == 15:
         PARAMS(tokens, node.add_child(Node("PARAMS")))
     consume(tokens, 122)
-    TYPE(tokens, node.add_child(Node("TYPE")))
+    TYPE(tokens, node)
     consume(tokens, 112)
     tok = tokens[0]
     while tok.code != 103:
@@ -184,7 +184,7 @@ def FUNC(tokens:list[Token], node:Node) -> None:
         tok = tokens[0]
     consume(tokens, 106)
     if tokens[0].code >= 300:
-        node.add_child("Ident" + consume(tokens, 300, Token.__lt__).value)
+        node.add_child("Ident-" + consume(tokens, 300, Token.__lt__).value)
     consume(tokens, 13)
 
 # eXPR :	tERM (oP tERM)* ('.' IDENT)?
@@ -196,7 +196,7 @@ def EXPR(tokens:list[Token], node:Node) -> None:
         TERM(tokens, node.add_child(Node("TERM")))
     if tokens[0] == 12:
         consume(tokens, 12)
-        node.add_child("Ident" + consume(tokens, 300, Token.__lt__).value)
+        node.add_child("Ident-" + consume(tokens, 300, Token.__lt__).value)
 
 # tERM :	ENTIER | CHAR val EXPR |	'true' | 'false' | 'null' | 'not' eXPR | '-' eXPR | IDENT ('(' eXPR vIRGULEEXPRETOILE ')')? | 'new' IDENT ;
 def TERM(tokens:list[Token], node:Node) -> None:
@@ -204,7 +204,7 @@ def TERM(tokens:list[Token], node:Node) -> None:
     # Manage non terminaux
     match tokens[0]:
         case 200: # ENTIER
-            node.add_child("Entier" + consume(tokens, 200, Token.__lt__).value)
+            node.add_child("Entier-" + consume(tokens, 200, Token.__lt__).value)
             return
         case 202: # CHAR
             node.add_child("Char: " + consume(tokens, 202, Token.__lt__).value)
@@ -219,10 +219,10 @@ def TERM(tokens:list[Token], node:Node) -> None:
         EXPR(tokens, node.add_child(Node("EXPR")))
         return
     if tokens[0] == 114:
-        node.add_child("Ident" + consume(tokens, 114).value)
+        node.add_child("Ident-" + consume(tokens, 114).value)
         return
     # IDENT ('(' eXPR vIRGULEEXPRETOILE ')')?
-    node.add_child("Ident" + consume(tokens, 300, Token.__lt__).value)
+    node.add_child("Ident-" + consume(tokens, 300, Token.__lt__).value)
     if tokens[0] == 15: # '('
         consume(tokens, 15) # consume anyway for consistency
         EXPR(tokens, node.add_child(Node("EXPR")))
@@ -239,7 +239,7 @@ def VALEXPR(tokens:list[Token], node:Node) -> None:
 def INSTR(tokens:list[Token], node:Node) -> None:
     # print("Entering INSTR")
     if tokens[0].code >=300: # If is IDENT
-        node.add_child("Ident" + consume(tokens, 300, Token.__lt__).value) # Consume for consistency
+        node.add_child("Ident-" + consume(tokens, 300, Token.__lt__).value) # Consume for consistency
         HELP2(tokens, node.add_child(Node("HELP2")))
         return
     # Manage BEGIN, etc here
@@ -264,9 +264,9 @@ def INSTR(tokens:list[Token], node:Node) -> None:
         consume(tokens, 13)
         return
     if tok == 114:
-        node.add_child("Ident" + consume(tokens, 300, Token.__lt__).value)
+        node.add_child("Ident-" + consume(tokens, 300, Token.__lt__).value)
     elif tok==200:
-        node.add_child("Entier" + consume(tokens, 200, Token.__lt__).value)
+        node.add_child("Entier-" + consume(tokens, 200, Token.__lt__).value)
     # elif tok==202: # Temporaire en attendant ce que l'on fait avec val
     #     node.add_child("Char: " + consume(tokens, 202, Token.__lt__).value)
     elif tok in (115, 8):
@@ -283,7 +283,7 @@ def FIN(tokens:list[Token], node:Node) -> None:
         TERM(tokens, node.add_child(Node("TERM")))
         tok = tokens[0]
     consume(tokens, 12)
-    node.add_child("Ident" + consume(tokens, 300, Token.__lt__).value)
+    node.add_child("Ident-" + consume(tokens, 300, Token.__lt__).value)
     consume(tokens, 14)
     EXPR(tokens, node.add_child(Node("EXPR")))
     consume(tokens, 13)
@@ -320,7 +320,7 @@ def HELP3(tokens:list[Token], node:Node) -> None:
 def HELP(tokens:list[Token], node:Node) -> None:
     # print("Entering HELP")
     if tokens[0] > 300:
-        node.add_child("Ident" + consume(tokens, 300, Token.__lt__).value)
+        node.add_child("Ident-" + consume(tokens, 300, Token.__lt__).value)
         consume(tokens, 14)
         EXPR(tokens, node.add_child(Node("EXPR")))
         consume(tokens, 13)
@@ -399,7 +399,7 @@ def IF_TAIL(tokens:list[Token], node:Node) -> None:
 def FOR(tokens:list[Token], node:Node) -> None:
     # print("Entering FOR")
     consume(tokens, 108)
-    node.add_child("Ident" + consume(tokens, 300, Token.__lt__).value)
+    node.add_child("Ident-" + consume(tokens, 300, Token.__lt__).value)
     consume(tokens, 111)
     tok = tokens[0]
     if tok.code == 123:
@@ -438,14 +438,14 @@ def WHILE(tokens:list[Token], node:Node) -> None:
 # cHAMPS :	IDENT (','IDENT)* ':' tYPE ';';
 def CHAMPS(tokens:list[Token], node:Node) -> None:
     # print("Entering CHAMPS")
-    node.add_child("Ident" + consume(tokens, 300, Token.__lt__).value)
+    node.add_child("Ident-" + consume(tokens, 300, Token.__lt__).value)
     tok = tokens[0]
     while tok.code == 17:
         consume(tokens, 17)
-        node.add_child("Ident" + consume(tokens, 300, Token.__lt__).value)
+        node.add_child("Ident-" + consume(tokens, 300, Token.__lt__).value)
         tok = tokens[0]
     consume(tokens, 18)
-    TYPE(tokens, node.add_child(Node("TYPE")))
+    TYPE(tokens, node)
     consume(tokens, 13)
 
 # tYPE :	IDENT |	'access' IDENT ;
@@ -453,9 +453,9 @@ def TYPE(tokens:list[Token], node:Node) -> None:
     # print("Entering TYPE")
     tok = consume(tokens, (300, 101), lambda t, c: t in c,) # check whether tok is in (300, 101)
     if tok==101:
-        node.add_child("Ident" + consume(tokens, 300, Token.__lt__).value)
+        node.add_child("Type-" + consume(tokens, 300, Token.__lt__).value)
     else:
-        node.add_child("Ident" + tok.value)
+        node.add_child("Type-" + tok.value)
     # print('Fin Type')
 
 # pARAMS :	'('pARAM (';'pARAM)*')';
@@ -473,17 +473,17 @@ def PARAMS(tokens:list[Token], node:Node) -> None:
 # pARAM :	IDENT (','IDENT)* ':' mODE? tYPE;
 def PARAM(tokens:list[Token], node:Node) -> None:
     # print("Entering PARAM")
-    node.add_child("Ident" + consume(tokens, 300, Token.__lt__).value)
+    node.add_child("Ident-" + consume(tokens, 300, Token.__lt__).value)
     tok = consume(tokens, (17, 18), lambda t, c: not t in c) # check whether tok is in (17, 18)
     while tok.code == 17:
         consume(tokens, 17)
-        node.add_child("Ident" + consume(tokens, 300, Token.__lt__).value)
+        node.add_child("Ident-" + consume(tokens, 300, Token.__lt__).value)
         tok = consume(tokens, (17, 18), lambda t, c: not t in c)
     # JE SAIS I KNOW deux check mais plus simple à comprendre
     tok = tokens[0]
     if tok.code == 111:
         MODE(tokens, node.add_child(Node("MODE")))
-    TYPE(tokens, node.add_child(Node("TYPE")))
+    TYPE(tokens, node)
 
 # mODE :	'in' 'out'?;
 def MODE(tokens:list[Token], node:Node) -> None:
