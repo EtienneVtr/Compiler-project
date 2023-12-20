@@ -33,24 +33,35 @@ from utils import *
 # for i in range(len(keywords)):
 #     codes[keywords[i]] = i+101
 
-VERBOSE = False
+VERBOSE = True
 
 COUNT = 0
+ERROR_COUNTER = 0
+MAX_ERROR = 1
 
 ROOT = None
 
 def consume(tokens:list[Token], code:[int, tuple], func:callable=Token.__ne__) -> Token:
     global COUNT
+    global ERROR_COUNTER
     tok  = tokens.pop(0)
     if VERBOSE:
         print((COUNT:=COUNT+1),"Consumming", tok, sep=' ')
     if func(tok, code):
+        ERROR_COUNTER += 1
         print_err(1, tok, get_keyword(code))
-        print()
-        # print(ROOT)
-        print()
-        print(0/0) # To show the stack trace
-        exit(1)
+        if isinstance(code, tuple):
+            print("Did you mean", " or ".join(["'" + get_keyword(c) + "'" for c in code]), "?", end="\n\n")
+            tokens.insert(0, tok)
+        else:
+            print("Did you mean", f"'{get_keyword(code)}'", "?", end="\n\n")
+            tokens.insert(0, tok)
+        if ERROR_COUNTER >= MAX_ERROR:
+            print("Too many errors, exiting")
+            if VERBOSE: print(0/0)
+            exit(1)
+        # print(0/0) # To show the stack trace
+        # exit(1)
     return tok
 
 # fICHIER :	'with Ada.Text_IO ; use Ada.Text_IO ;\nprocedure' IDENT 'is' dECL*'\nbegin' iNSTR+ 'end' iDENTINTER ';';
