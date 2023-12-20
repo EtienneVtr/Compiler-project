@@ -282,8 +282,11 @@ def INSTR(tokens:list[Token], node:Node) -> None:
     #     node.add_child("Char: " + consume(tokens, 202, Token.__lt__).value)
     elif tok in (115, 8):
         EXPR(tokens, node.add_child(Node("EXPR")))
-    elif not tok in (125, 107, 1016):
+    elif not tok in (125, 107, 116):
         FIN(tokens, node.add_child(Node("FIN")))
+        return
+    consume(tokens, 13)
+
     
     
 # fIN -> (oP tERM)* '.' IDENT ':=' EXPR ';';

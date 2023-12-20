@@ -16,7 +16,7 @@ tERM :	ENTIER | CHAR vALEXPR |	'true' | 'false' | 'null' | 'not' eXPR | '-' eXPR
 
 vALEXPR :	'val' eXPR | '';
 
-iNSTR : IDENT hELP2 |	'return' eXPR? ';' |	bEGIN |	iF |	fOR |	wHILE |	ENTIER fIN |	CHAR VALEXPR fIN |	'true' fIN |	'false' fIN |	'null' fIN |	'not' EXPR fIN |	'moins' EXPR fIN |	'new' IDENT fIN;
+iNSTR : IDENT hELP2 |	'return' eXPR? ';' |	bEGIN |	iF |	fOR |	wHILE |	ENTIER fIN |	CHAR VALEXPR fIN |	'true' fIN |	'false' fIN |	'null' fIN? |	'not' EXPR fIN |	'moins' EXPR fIN |	'new' IDENT fIN;
 
 fIN : (oP tERM)* '.' IDENT ':=' eXPR ';';
 

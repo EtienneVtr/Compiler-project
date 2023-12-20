@@ -1,0 +1,7 @@
+with @da.Text_IO; use Ada.Text_IO;
+😀
+procedure LexicalError is
+   a : Integer := 1;
+begin
+   null;
+end LexicalError;
