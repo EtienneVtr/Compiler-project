@@ -1,5 +1,5 @@
 from sys import stderr
-from token_pcl import Token
+from token_pcl import Token, keywords
 
 error_types = ["(Erreur Lexicale) ", "(Erreur Syntaxique) "]
 def print_err(type:int==None, tok:Token, attendu:str, *args, **kwargs):
@@ -33,3 +33,11 @@ def levenshtein_distance(s1, s2):
         previous_row = current_row
     # On retourne la distance de Levenshtein
     return previous_row[-1]
+
+def could_be_keyword(value:str) -> bool:
+    mini = 100
+    for k in keywords:
+        l:int = levenshtein_distance(k, value)
+        if l < mini:
+            mini = l
+    return mini!=0 and mini<=2
