@@ -3,7 +3,7 @@ from token_pcl import Token, MAX_IDENT_SIZE, MAX_CONST_SIZE, CONST_CODE, STR_COD
 
 def analyseurLexical(nomFichier:str = "../data/test1_correct.ada") -> (list[Token],list[str]):
     """
-    Return une liste des Tokens luent dans un fichiera
+    Return une liste des Tokens luent dans un fichier
     """
     tokens = []
     stack = ""
@@ -79,18 +79,21 @@ def analyseurLexical(nomFichier:str = "../data/test1_correct.ada") -> (list[Toke
         else:
             stack += c
     automate = zero
+    comment = False
     with open(nomFichier, 'r') as f:
         id_line = 1
         for line in f:
-            if '--' in line:
-                line = line.split('--', 1)[0] # S'il y a un commentaire dans la ligne, on ignore toute la ligne à partir de --
-            if not line.strip(): # Si, après suppression du commentaire, la ligne est vide, alors on passe à la ligne suivante
-                id_line += 1
-                continue
-
             for c in line:
+                if comment:
+                    comment = False
+                    if c == '-':
+                        id_line += 1
+                        break
+                    automate('-',id_line)
+                elif c == '-':
+                    comment = True
+                    continue 
                 automate(c,id_line)
-                
             id_line += 1
         tok_append(id_line-1)
         return (tokens,lexique)

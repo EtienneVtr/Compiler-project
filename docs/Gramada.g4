@@ -10,7 +10,7 @@ pROCEDURE :  'procedure' IDENT pARAMS? 'is' dECL*'\nbegin' iNSTR+ 'end' IDENT?';
 fUNC      :  'function' IDENT pARAMS? 'return' tYPE 'is' dECL*'\nbegin' iNSTR+ 'end' IDENT?';';
 
 eXPR      :  tERM (oP tERM)*;
-tERM      :  ENTIER | CHAR  | 'true' | 'false' | 'null' | 'not' eXPR | '-' eXPR |   IDENT '('eXPR (','eXPR)*')'  | CHAR 'val' eXPR | 'new' IDENT;
+tERM      :  ENTIER | CHAR  | 'true ;' | 'false ;' | 'null ;' | 'not' eXPR | '-' eXPR |   IDENT '('eXPR (','eXPR)*')'  | CHAR 'val' eXPR | 'new' IDENT;
 
 iNSTR     :  aCCES ':=' eXPR';' | 'return' eXPR? ';' |   IDENT ('('eXPR')')*';' | bEGIN | iF | fOR | wHILE;
 

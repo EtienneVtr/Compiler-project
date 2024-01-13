@@ -37,7 +37,7 @@ VERBOSE = False
 
 COUNT = 0
 ERROR_COUNTER = 0
-MAX_ERROR = 1
+MAX_ERROR = 5
 
 ROOT = None
 
@@ -54,11 +54,23 @@ def consume(tokens:list[Token], code:[int, tuple], func:callable=Token.__ne__) -
             print("Did you mean", " or ".join(["'" + get_keyword(c) + "'" for c in code]), "?", end="\n\n")
             tokens.insert(0, tok)
         else:
+            ## On va utiliser la distance de livenstein pour trouver le mot le plus proche
+            if tok.__lt__(code):
+                liste = get_keyword(code)
+                for i in liste:
+                    if levenshtein_distance(i, tok.value) <= 3:
+                        print("Did you mean", "'" + i + "'", "?", end="\n\n")
+                        tok = i
+                        ######
+                        #@@@@@  A FAIRE
+                        #@@@@@  Matthias
+                        ######  A FAIRE
+                        break
             print("Did you mean", f"'{get_keyword(code)}'", "?", end="\n\n")
             tokens.insert(0, tok)
         if ERROR_COUNTER >= MAX_ERROR:
             print("Too many errors, exiting")
-            if VERBOSE: print(0/0)
+            # if VERBOSE: print(0/0)
             exit(1)
         # print(0/0) # To show the stack trace
         # exit(1)
@@ -284,7 +296,11 @@ def INSTR(tokens:list[Token], node:Node) -> None:
     #     node.add_child("Char: " + consume(tokens, 202, Token.__lt__).value)
     elif tok in (115, 8):
         EXPR(tokens, node.add_child(Node("EXPR")))
-    FIN(tokens, node.add_child(Node("FIN")))
+    elif not tok in (125, 107, 116):
+        FIN(tokens, node.add_child(Node("FIN")))
+        return
+    consume(tokens, 13)
+
     
     
 # fIN -> (oP tERM)* '.' IDENT ':=' EXPR ';';

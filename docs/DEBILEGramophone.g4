@@ -49,9 +49,9 @@ INSTR ->	IDENT HELP2
 |	WHILE 
 |	int FIN
 |	caractere VALEXPR FIN
-|	true FIN
-|	false FIN
-|	null FIN
+|	true ;
+|	false ;
+|	null ;
 |	not EXPR FIN
 |	moins EXPR FIN
 |	new IDENT FIN .
