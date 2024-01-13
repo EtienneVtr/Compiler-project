@@ -1,7 +1,7 @@
 with Ada.Text_IO; use Ada.Text_IO;
 
-procedure LexicalError is
+procedure LexicalErrorLexicalErrorLexicalErrorLexicalErrorLexicalErrorLexicalErrorLexicalErrorLexicalError is
    a : Integer := 3;
-begïn
-   nûll;
-end Lexical€rror;
+begin
+   null;
+end LexicalError;
