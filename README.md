@@ -6,29 +6,81 @@ L'objectif de ce projet est d'écrire un compilateur d'un langage de haut niveau
 
 L'arborescence de ce projet suit une structure standard pour faciliter la gestion et le développement.
 ```
-Aulagnie2u1/
-│
-├── README.md # Documentation du projet
-├── requirements.txt # (Si nécessaire)
-├── setup.py # (A faire) Fichier de configuration pour l'installation du projet
-├── .gitignore # Liste des fichiers et répertoires à ignorer dans Git
-│
-├── sample/ # Dossier contenant le code source
-│ ├── init.py # Fichier d'initialisation du module
-│ ├── analyseurLexical.py # analyseurLexical
-│ ├── module2.py # Module 2
-│
-├── tests/ # Tests unitaires
-│ ├── init.py
-│ ├── test_module1.py # Tests pour module1
-│ ├── test_module2.py # Tests pour module2
-│
-├── docs/ # Données de cours ou utiles
-│
-├── data/ # Données statiques ou fichiers de configuration
-│   ├── codeCanAda #Utile pour la réalision de test
-│
-└── app.py # Point d'entrée de l'application
+❯ tree
+aulagnie2u1
+├── README.md
+├── data
+│   ├── Gantt.xlsx
+│   ├── first_tree.png
+│   ├── first_tree.svg
+│   ├── hw.ada
+│   ├── test1_correct.ada
+│   ├── test2_erreur_lexical.ada
+│   ├── test3_op_logique.ada
+│   ├── tree_test1_correct.png
+│   └── tree_test1_correct.svg
+├── docs
+│   ├── CoursTraduction.pdf
+│   ├── DEBILEANTLR.g4
+│   ├── DEBILEGramophone.g4
+│   ├── Gramada.g4
+│   └── sujet-Projet-2023-24.pdf
+├── makefile
+├── presentationTest
+│   ├── 1
+│   ├── 2
+│   ├── 3
+│   ├── 4
+│   ├── 5
+│   ├── 6
+│   └── 9
+├── rapportOld
+│   ├── Rapport_final_PPII1.pdf
+│   └── Rapport_final_PPII2.pdf
+├── reunions
+│   ├── PREP_Reunion091123.pdf
+│   ├── PREP_Reunion201023.pdf
+│   ├── PREP_Reunion221123.pdf
+│   ├── PREP_Reunion251023.pdf
+│   ├── reunion091123.pdf
+│   ├── reunion201023.pdf
+│   ├── reunion251023.pdf
+│   └── src
+│       ├── CR_Reunion091123.md
+│       ├── CR_Reunion201023.md
+│       ├── CR_Reunion251023.md
+│       ├── PREP_Reunion091123.md
+│       ├── PREP_Reunion201023.md
+│       ├── PREP_Reunion221123.md
+│       └── PREP_Reunion251023.md
+├── sample
+│   ├── AST.py
+│   ├── __init__.py
+│   ├── __pycache__
+│   │   ├── AST.cpython-310.pyc
+│   │   ├── analyseurLexical.cpython-310.pyc
+│   │   ├── grammaire.cpython-310.pyc
+│   │   ├── token_pcl.cpython-310.pyc
+│   │   └── utils.cpython-310.pyc
+│   ├── analyseurLexical.py
+│   ├── get_codes.py
+│   ├── grammaire.py
+│   ├── main.py
+│   ├── token_pcl.py
+│   └── utils.py
+├── test
+├── tests
+│   ├── __init__.py
+│   ├── antlr
+│   │   ├── Gramada.g4
+│   │   ├── Gramada.old
+│   │   ├── code.ada
+│   │   └── morph.py
+│   ├── test_analyseurLexical.py
+│   └── test_analyseurLexical_2.py
+└── todo.md
+
+11 directories, 61 files
 ```
 
 ## Tests Unitaires

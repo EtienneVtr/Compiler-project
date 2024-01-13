@@ -14,4 +14,3 @@
 - Gérer les priorités d'opérateur (parcours en largeur)
 - gérer les noeuds (Donner de la sémantique aux noeuds (donc noeuf IF, ELSE, RETURN))
 - Faire le rapport et diaporama
-
