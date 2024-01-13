@@ -38,34 +38,88 @@ VERBOSE = False
 COUNT = 0
 ERROR_COUNTER = 0
 MAX_ERROR = 5
+MAX_PASS = 3
 
 ROOT = None
+
+BEST_POSSIBLE_KEYWORD = (100, "", -1)
+PASS = 0
+
+token_cpy = None
+lexique = None
+
+ROOT = None
+
+def analyse(tokens:list[Token], lex:list[Token]) -> None:
+    Node.NEXT_ID = 0
+    global token_cpy
+    global lexique
+    global ROOT
+    if VERBOSE:
+        print(f"PASSE {PASS} of {MAX_PASS}", file=stderr)
+    token_cpy = tokens.copy()
+    lexique = lex.copy()
+    ROOT = Node("FICHIER")
+    FICHIER(tokens, ROOT)
+
+def end(errno:int=0) -> None:
+    if VERBOSE:
+        global COUNT
+        global ERROR_COUNTER
+        global BEST_POSSIBLE_KEYWORD
+        print("Nombre de tokens luent:", COUNT)
+        print("Nombre d'erreurs:", ERROR_COUNTER)
+        print("Best possible keyword:", BEST_POSSIBLE_KEYWORD)
+    if errno!=0 and PASS <= MAX_PASS:
+        print(f"\nTrying again with '{BEST_POSSIBLE_KEYWORD[1]}'", file=stderr)
+        tok:Token = token_cpy[BEST_POSSIBLE_KEYWORD[2]]
+        token_cpy[BEST_POSSIBLE_KEYWORD[2]] = Token(BEST_POSSIBLE_KEYWORD[1], tok.line)
+        analyse(token_cpy, lexique)
+    if PASS > MAX_PASS+1:
+        print("Too many passes, exiting", file=stderr)
+    if not VERBOSE:
+        print(ROOT.mermaid())
+    exit(errno)
 
 def consume(tokens:list[Token], code:[int, tuple], func:callable=Token.__ne__) -> Token:
     global COUNT
     global ERROR_COUNTER
+    global BEST_POSSIBLE_KEYWORD
     tok  = tokens.pop(0)
+    if tok.code >= 300:
+        l, k = possible_keyword(tok.value)
+        if l<2 and l < BEST_POSSIBLE_KEYWORD[0]:
+            BEST_POSSIBLE_KEYWORD = (l, k, COUNT)
     if VERBOSE:
-        print((COUNT:=COUNT+1),"Consumming", tok, sep=' ')
+        print(COUNT,"Consumming", tok, sep=' ')
     if func(tok, code):
         ERROR_COUNTER += 1
         print_err(1, tok, get_keyword(code))
         if isinstance(code, tuple):
-            print("Did you mean", " or ".join(["'" + get_keyword(c) + "'" for c in code]), "?", end="\n\n")
+            print("Did you mean", " or ".join(["'" + get_keyword(c) + "'" for c in code]), "?", end="\n\n", file=stderr)
             # tokens.insert(0, tok)
         else:
-            print("Did you mean", f"'{get_keyword(code)}'", "?", end="\n\n")
+            print("Did you mean", f"'{get_keyword(code)}'", "?", end="\n\n", file=stderr)
             # tokens.insert(0, tok)
         if ERROR_COUNTER >= MAX_ERROR:
-            print("Too many errors, exiting")
+            print("Too many errors, exiting", file=stderr)
             # if VERBOSE: print(0/0)
-            exit(1)
+            end(1)
         # print(0/0) # To show the stack trace
         # exit(1)
+    COUNT += 1
     return tok
 
 # fICHIER :	'with Ada.Text_IO ; use Ada.Text_IO ;\nprocedure' IDENT 'is' dECL*'\nbegin' iNSTR+ 'end' iDENTINTER ';';
 def FICHIER(tokens: list[Token], node:Node) -> None:
+    global PASS
+    global COUNT
+    global ERROR_COUNTER
+    global BEST_POSSIBLE_KEYWORD
+    PASS += 1
+    COUNT = 0
+    ERROR_COUNTER = 0
+    BEST_POSSIBLE_KEYWORD = (100, "", -1)
     # print("Entering FICHIER")
     consume(tokens, 129)
     consume(tokens, 300, Token.__lt__)
@@ -89,6 +143,7 @@ def FICHIER(tokens: list[Token], node:Node) -> None:
     consume(tokens, 106)
     if consume(tokens, 13, lambda t, c: t!=c and t<300)!=13:
         consume(tokens, 13)
+    end(0)
 
 # dECL :	'type' IDENT ('is' d)? ';' | pROCEDURE | fUNC | IDENT (',' IDENT)* : TYPE  (':=' EXPR)? ';';
 def DECL(tokens:list[Token], node:Node) -> None:
