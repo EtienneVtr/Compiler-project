@@ -183,6 +183,7 @@ def PROCEDURE(tokens:list[Token], node:Node) -> None:
     # print("Leaving PROCEDURE")
 
 # fUNC :	'function' IDENT pARAMS? 'return' tYPE 'is' dECL*'\nbegin' iNSTR+ 'end' IDENT?';';
+# Probleme : la grammaire accepte pas un return avec des parentheses (style 'return (a+b);')
 def FUNC(tokens:list[Token], node:Node) -> None:
     # print("Entering FUNC")
     node.add_child("Function_Identifier\"" + consume(tokens, 300, Token.__lt__).value + "\"")
@@ -210,7 +211,7 @@ def FUNC(tokens:list[Token], node:Node) -> None:
 
 # eXPR :	tERM (oP tERM)* ('.' IDENT)?
 def EXPR(tokens:list[Token], node:Node) -> None:
-    # print("Entering EXPR")
+    #print("Entering EXPR")
     TERM(tokens, node)
     while not tokens[0] in (12, 13, 124, 16):
         #OP(tokens, node.add_child(Node("OPERATOR")))
@@ -251,7 +252,7 @@ def EXPR(tokens:list[Token], node:Node) -> None:
 
 # tERM :	ENTIER | CHAR val EXPR |	'true' | 'false' | 'null' | 'not' eXPR | '-' eXPR | IDENT ('(' eXPR vIRGULEEXPRETOILE ')')? | 'new' IDENT ;
 def TERM(tokens:list[Token], node:Node) -> None:
-    # print("Entering TERM")
+    print("Entering TERM")
     # Manage non terminaux
     match tokens[0]:
         case 200: # ENTIER
@@ -291,7 +292,7 @@ def VALEXPR(tokens:list[Token], node:Node) -> None:
     pass
 
     
-# iNSTR : IDENT hELP2 |	'return' eXPR? ';' |	bEGIN |	iF |	fOR |	wHILE |	ENTIER fIN |	CHAR VALEXPR fIN |	'true' fIN |	'false' fIN |	'null' fIN |	'not' EXPR fIN |	'-' EXPR fIN |	'new' IDENT fIN;
+# iNSTR : IDENT hELP2 |	'return' eXPR? ';' |  bEGIN |	iF |	fOR |	wHILE |	ENTIER fIN |	CHAR VALEXPR fIN |	'true' fIN |	'false' fIN |	'null' fIN |	'not' EXPR fIN |	'-' EXPR fIN |	'new' IDENT fIN;
 def INSTR(tokens:list[Token], node:Node) -> None:
     # print("Entering INSTR")
     if tokens[0].code >=300: # If is IDENT
@@ -584,7 +585,7 @@ if __name__=="__main__":
     from sys import argv
     tokens: list[Token]
     lexique: list[str]
-    tokens, lexique = analyseurLexical(argv[1] if len(argv)>=2 else "../data/test1_correct.ada")
+    tokens, lexique = analyseurLexical(argv[1] if len(argv)>=2 else "../data/test3_op_logique.ada")
     # print(tokens, end="\n\n")
     # print(lexique, end="\n\n")
     ROOT = Node("ROOT")
