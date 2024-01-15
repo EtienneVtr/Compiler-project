@@ -34,10 +34,16 @@ def levenshtein_distance(s1, s2):
     # On retourne la distance de Levenshtein
     return previous_row[-1]
 
-def could_be_keyword(value:str) -> bool:
+def possible_keyword(value:str) -> tuple[int, str] or None:
+    """
+    Retourne le mot clé le plus proche de value, et sa distance de Levenshtein.
+    Si la distance est supérieure à 2, retourne (-1, None).
+    """
     mini = 100
+    kw = None
     for k in keywords:
         l:int = levenshtein_distance(k, value)
         if l < mini:
             mini = l
-    return mini!=0 and mini<=2
+            kw = k
+    return (mini, kw)
