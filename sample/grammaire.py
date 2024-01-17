@@ -54,7 +54,7 @@ def rearange(node:Node) -> None:
     for i in range(len(node.children)):
         if node.children[i].type[:2] == "OP":
             code = int(node.children[i].type[2:])
-            if (p:=prio_op(code)) < op_p:
+            if (p:=prio_op(code)) <= op_p:
                 op_p = p
                 op_i = i
     if op_i == -1:
