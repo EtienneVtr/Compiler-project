@@ -37,6 +37,8 @@ class Node:
             rtn += f"\t{self.type}:{self.id} --> {child.type}:{child.id};\n"
             rtn += child._mermaid()
         return rtn
+    def __iter__(self):
+        return iter(self.children)
 class AST:
     def __init__(self):
         self.root = Node("FICHIER")

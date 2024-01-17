@@ -1,6 +1,8 @@
 from sys import stderr
 from token_pcl import Token, keywords
 
+VERBOSE = True
+
 error_types = ["(Erreur Lexicale) ", "(Erreur Syntaxique) "]
 def print_err(type:int==None, tok:Token, attendu:str, *args, **kwargs):
     if type==1:
@@ -47,3 +49,7 @@ def possible_keyword(value:str) -> tuple[int, str] or None:
             mini = l
             kw = k
     return (mini, kw)
+
+def verbose(*args, **kwargs):
+    if VERBOSE:
+        print(*args, **kwargs, file=stderr)
