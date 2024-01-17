@@ -12,7 +12,7 @@
 
 221123:
 	pandoc reunions/src/PREP_Reunion221123.md -o reunions/PREP_Reunion221123.pdf --pdf-engine=pdflatex
-	#pandoc reunions/src/CR_Reunion221123.md -o reunions/reunion221123.pdf --pdf-engine=pdflatex
+	pandoc reunions/src/CR_Reunion221123.md -o reunions/reunion221123.pdf --pdf-engine=pdflatex
 
 # Règle par défaut : génère tous les PDFs
 all: clean 201023 251023 091123 221123
