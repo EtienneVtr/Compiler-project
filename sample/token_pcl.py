@@ -23,6 +23,19 @@ operators = [
     '*', '/', '--', '.', ';',':=','(',')',',',':'
 ]
 
+def prio_op(op:int)->int:
+    if op in (117, 102):
+        return 0
+    if op<=2:
+        return 1
+    if op<=6:
+        return 2
+    if op<=8:
+        return 3
+    if op<=10 or op==121:
+        return 4
+    return -1
+
 codes = dict()  # Dictionnaire des codes des mots-clés et opérateurs
 for i in range(len(operators)):
     codes[operators[i]] = i+1

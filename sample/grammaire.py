@@ -1,6 +1,6 @@
 # pour IDENT
 
-from token_pcl import Token, codes, get_keyword
+from token_pcl import Token, codes, get_keyword, prio_op
 from AST import Node
 from utils import *
 # from analyseurLexical import *
@@ -47,6 +47,31 @@ lexique = None
 
 ROOT = None
 
+def rearange(node:Node) -> None:
+    L, R = list(), list()
+    op_p = 5
+    op_i = -1
+    for i in range(len(node.children)):
+        if node.children[i].type[:2] == "OP":
+            code = int(node.children[i].type[2:])
+            if (p:=prio_op(code)) < op_p:
+                op_p = p
+                op_i = i
+    if op_i == -1:
+        for child in node:
+            rearange(child)
+        return
+    L = node.children[:op_i]
+    R = node.children[op_i+1:]
+    node.children = [node.children[op_i]]
+    nL = Node("L")
+    nR = Node("R")
+    nL.children = L
+    nR.children = R
+    rearange(nL)
+    rearange(nR)
+    node.children[0].children = nL.children + nR.children
+
 def analyse(tokens:list[Token], lex:list[Token]) -> None:
     Node.NEXT_ID = 0
     global token_cpy
@@ -74,8 +99,8 @@ def end(errno:int=0) -> None:
         analyse(token_cpy, lexique)
     if PASS > MAX_PASS+1:
         print("Too many passes, exiting", file=stderr)
-    if not VERBOSE:
-        print(ROOT.mermaid())
+    rearange(ROOT)
+    print(ROOT.mermaid())
     exit(errno)
 
 def consume(tokens:list[Token], code:[int, tuple], func:callable=Token.__ne__) -> Token:
