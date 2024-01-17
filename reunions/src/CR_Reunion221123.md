@@ -19,4 +19,3 @@ Nous avons abodé les points suivants:
 - Problème de gestion des noeuds
 - Problème de gestion des erreurs, avec l'idée d'aborder la distance de Levenshtein pour selectionner les erreurs les plus pertinentes
 ---
-
