@@ -295,7 +295,7 @@ def EXPR(tokens:list[Token], node:Node) -> None:
 
 # tERM :	ENTIER | CHAR val EXPR |	'true' | 'false' | 'null' | 'not' eXPR | '-' eXPR | IDENT ('(' eXPR vIRGULEEXPRETOILE ')')? | 'new' IDENT ;
 def TERM(tokens:list[Token], node:Node) -> None:
-    print("Entering TERM")
+    print("Entering TERM", file=stderr)
     # Manage non terminaux
     match tokens[0]:
         case 200: # ENTIER
