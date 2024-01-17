@@ -1,7 +1,7 @@
 from sys import stderr
 from token_pcl import Token, keywords
 
-VERBOSE = True
+VERBOSE = False
 
 error_types = ["(Erreur Lexicale) ", "(Erreur Syntaxique) "]
 def print_err(type:int==None, tok:Token, attendu:str, *args, **kwargs):

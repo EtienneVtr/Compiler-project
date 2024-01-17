@@ -89,9 +89,9 @@ def end(errno:int=0) -> None:
         global COUNT
         global ERROR_COUNTER
         global BEST_POSSIBLE_KEYWORD
-        print("Nombre de tokens luent:", COUNT)
-        print("Nombre d'erreurs:", ERROR_COUNTER)
-        print("Best possible keyword:", BEST_POSSIBLE_KEYWORD)
+        verbose("Nombre de tokens luent:", COUNT)
+        verbose("Nombre d'erreurs:", ERROR_COUNTER)
+        verbose("Best possible keyword:", BEST_POSSIBLE_KEYWORD)
     if errno!=0 and PASS <= MAX_PASS:
         print(f"\nTrying again with '{BEST_POSSIBLE_KEYWORD[1]}'", file=stderr)
         tok:Token = token_cpy[BEST_POSSIBLE_KEYWORD[2]]
