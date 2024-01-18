@@ -1,5 +1,7 @@
 import re
 from token_pcl import Token, MAX_IDENT_SIZE, MAX_CONST_SIZE, CONST_CODE, STR_CODE, codes, keywords, operators
+from os.path import isfile as os_isfile
+from sys import stderr
 
 def analyseurLexical(nomFichier:str = "../data/test1_correct.ada") -> (list[Token],list[str]):
     """
@@ -80,6 +82,9 @@ def analyseurLexical(nomFichier:str = "../data/test1_correct.ada") -> (list[Toke
             stack += c
     automate = zero
     comment = False
+    if not os_isfile(nomFichier):
+        print(f"Le fichier '{nomFichier}' n'existe pas", file=stderr)
+        exit(1)
     with open(nomFichier, 'r') as f:
         id_line = 1
         for line in f:

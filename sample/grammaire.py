@@ -125,15 +125,16 @@ def end(errno:int=0) -> None:
         verbose("Nombre de tokens luent:", COUNT)
         verbose("Nombre d'erreurs:", ERROR_COUNTER)
         verbose("Best possible keyword:", BEST_POSSIBLE_KEYWORD)
-    if errno!=0 and PASS <= MAX_PASS:
+    if errno!=0 and PASS <= MAX_PASS and BEST_POSSIBLE_KEYWORD[2] > -1:
         print(f"\nTrying again with '{BEST_POSSIBLE_KEYWORD[1]}'", file=stderr)
         tok:Token = token_cpy[BEST_POSSIBLE_KEYWORD[2]]
         token_cpy[BEST_POSSIBLE_KEYWORD[2]] = Token(BEST_POSSIBLE_KEYWORD[1], tok.line)
         analyse(token_cpy, lexique)
     if PASS > MAX_PASS+1:
-        print("Too many passes, exiting", file=stderr)
-    rearange(ROOT)
-    print(ROOT.mermaid())
+        print("Maximum PASS reached, exiting", file=stderr)
+    if errno==0:
+        rearange(ROOT)
+        print(ROOT.mermaid())
     exit(errno)
 
 def consume(tokens:list[Token], code:[int, tuple], func:callable=Token.__ne__) -> Token:
@@ -157,7 +158,7 @@ def consume(tokens:list[Token], code:[int, tuple], func:callable=Token.__ne__) -
             print("Did you mean", f"'{get_keyword(code)}'", "?", end="\n\n", file=stderr)
             # tokens.insert(0, tok)
         if ERROR_COUNTER >= MAX_ERROR:
-            print("Too many errors, exiting", file=stderr)
+            print("Too many errors", file=stderr)
             # if VERBOSE: print(0/0)
             end(1)
         # print(0/0) # To show the stack trace
@@ -326,6 +327,9 @@ def EXPR(tokens:list[Token], node:Node) -> None:
 def TERM(tokens:list[Token], node:Node) -> None:
     verbose("Entering TERM")
     # Manage non terminaux
+    if len(tokens)==0:
+        print("Unexpected end of file", file=stderr)
+        end(1)
     match tokens[0]:
         case 200: # ENTIER
             node.add_child("Integer///" + consume(tokens, 200, Token.__lt__).value)

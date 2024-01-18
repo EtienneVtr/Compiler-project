@@ -1,3 +1,4 @@
+from sys import stderr
 # Définition de la taille max d'un identificateur
 MAX_IDENT_SIZE = 40
 
@@ -104,7 +105,7 @@ class Token:
                     if self.value.isdigit() and len(self.value) <= MAX_CONST_SIZE:
                         self.code = CONST_CODE
                     else :
-                        print("Erreur lexicale à la ligne", self.line-1, ":", self.value)
+                        print("Erreur lexicale à la ligne", self.line-1, ":", self.value, file=stderr)
 
     def __str__(self) -> str:
         if self.code == CONST_CODE :
