@@ -13,5 +13,8 @@ tokens: list[Token]
 lexique: list[str]
 tokens, lexique = analyseurLexical(argv[1] if len(argv)>=2 else "../data/test1_correct.ada")
 
+if Token.has_lexical_error:
+    exit(2)
+
 g.analyse(tokens, lexique)
 g.end(0)

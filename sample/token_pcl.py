@@ -83,6 +83,7 @@ class Token:
     >>> t != Token('or')
     True
     """
+    has_lexical_error = False
     def __init__(self, value:str, line:int=None, code:int=None) -> None:
         """
         Initialise un Tokenœ
@@ -106,6 +107,7 @@ class Token:
                         self.code = CONST_CODE
                     else :
                         print("Erreur lexicale à la ligne", self.line-1, ":", self.value, file=stderr)
+                        Token.has_lexical_error = True
 
     def __str__(self) -> str:
         if self.code == CONST_CODE :
